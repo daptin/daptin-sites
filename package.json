@@ -1,0 +1,40 @@
+{
+  "name": "chief",
+  "version": "0.0.1",
+  "description": "Daptin chief",
+  "productName": "Chief",
+  "cordovaId": "in.dapt.chief",
+  "author": "artpar <artpar@gmail.com>",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue src",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "daptin-client": "^0.2.2",
+    "jwt-decode": "^2.2.0",
+    "mustache": "^3.0.1",
+    "node-json-transform": "^1.0.19",
+    "quasar": "^1.0.0-beta.0",
+    "vue-filter-date-format": "^1.2.5",
+    "vue-i18n": "^8.0.0",
+    "vue-morphling": "^0.8.5"
+  },
+  "devDependencies": {
+    "@quasar/app": "^1.0.0-beta.0",
+    "@vue/eslint-config-prettier": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.10.0",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-vue": "^5.0.0"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ]
+}
