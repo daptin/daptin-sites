@@ -37,5 +37,8 @@ export default {
   },
   layout(state) {
     return state.currentLayout;
+  },
+  path(state) {
+    return state.path
   }
 }

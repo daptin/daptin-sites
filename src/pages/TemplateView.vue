@@ -1,13 +1,6 @@
 <template>
   <q-page>
-    <q-toolbar class="bg-primary text-white shadow-2" v-if="localData && localData.title">
-      <q-toolbar-title>{{localData.title}}</q-toolbar-title>
-    </q-toolbar>
-
-    <div class="q-pa-md row items-start q-gutter-md">
-
-      {{localData}}
-    </div>
+    <component v-if="layout" v-bind:localData="localData" @item-single-click="itemSingleClick" v-bind:layout="layout" v-bind:is="layout.template"></component>
   </q-page>
 </template>
 
@@ -16,6 +9,7 @@
 <script>
   import {mapGetters, mapActions} from 'vuex'
   import Mustache from 'mustache';
+
 
   export default {
     data() {
@@ -30,9 +24,9 @@
         'localData',
         'layout',
         'pagination'
-      ])
+      ]),
     },
-    name: "FormView",
+    name: "TemplateView",
     methods: {
       itemSingleClick(row, i) {
         console.log("Clicked item", row, this.data[i]);
@@ -48,7 +42,7 @@
       ...mapActions(['refreshData', 'setLayout'])
     },
     mounted() {
-      console.log("loaded card view", this.$route);
+      console.log("loaded template view", this.$route);
       this.setLayout(this.$route.params.layout);
       this.loadData();
     },
@@ -57,7 +51,12 @@
         console.log("Current tab changed", va);
         this.setLayout(this.$route.params.layout);
         this.loadData();
+      },
+      '$route': function(a) {
+        console.log('route changed template view', arguments);
+        this.setLayout(this.$route.params.layout);
+        this.loadData();
       }
-    }
+    },
   };
 </script>

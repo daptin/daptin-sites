@@ -1,7 +1,13 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" :style="{background: appLayout.style.background}">
     <q-page-container>
+
       <router-view/>
+      <!--
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn @click="make" fab icon="add" color="accent"/>
+      </q-page-sticky>
+      -->
     </q-page-container>
     <q-footer>
       <q-tabs inline-label
@@ -33,11 +39,16 @@
     },
     methods: {
       openURL,
-      ...mapActions(['loadTab']),
+      make() {
+        console.log("goto make")
+        this.$router.push("/make")
+      },
+      ...mapActions(['setLayout', 'refreshData']),
       setTab(tab) {
         console.log("load page", tab);
         this.$router.push(tab.path);
-        this.loadTab(tab);
+        this.setLayout(tab.path.split("/")[1])
+        this.refreshData(this.$route.params.referenceId)
       }
     },
     mounted() {

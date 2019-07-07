@@ -5,24 +5,31 @@
       <q-toolbar-title>{{layout.title}}</q-toolbar-title>
     </q-toolbar>
 
-    <div class="q-pa-md row items-start q-gutter-md">
-      <template v-for="(row, i) in localData">
-        <q-card class="my-card" :key="row.key" @click="itemSingleClick(row, i)">
+    <div class="q-pa-md row">
+      <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4"  :key="row.key" v-for="(row, i) in localData">
 
-          <q-avatar color="grey" text-color="white">
-            {{ row.avatar }}
-          </q-avatar>
 
+        <q-card class="my-card" @click="itemSingleClick(row, i)">
           <q-card-section>
-            <q-item-label>{{row.title}}</q-item-label>
-            <q-item-label caption lines="2">{{row.description}}</q-item-label>
+            <div class="text-h6">{{row.title}}</div>
+            <div class="text-subtitle2">{{row.summary}}</div>
           </q-card-section>
-
           <q-card-section>
-            <q-item-label caption>{{row.created_at | dateFormat('DD MMM YY')}}</q-item-label>
+            {{row.content}}
           </q-card-section>
+          <img :src="'data:image/png;base64, ' + row.heading_image">
+
+          <q-separator dark/>
+
+          <q-card-actions  align="around">
+            <q-btn flat  icon="share">Share</q-btn>
+            <q-btn flat  icon="thumb_up">Like</q-btn>
+          </q-card-actions>
+          {{row.article}}
+
         </q-card>
-      </template>
+
+      </div>
     </div>
   </q-page>
 </template>
