@@ -19,6 +19,7 @@ var defaultConfig = {
   type: null,
   loaded: false,
   data: null,
+  worldModels: null,
   localData: null,
   currentLayout: null,
   appLayout: {
@@ -105,28 +106,24 @@ var defaultConfig = {
     ],
     tabs: [
       {
-        item: "user_account",
         label: "User accounts",
         icon: "face",
-        path: "/user_template/template"
+        path: "/user_template"
       },
       {
-        item: "mail",
         label: "Mails",
         icon: "mail",
-        path: "/mail_template/template"
+        path: "/mail_template"
       },
       {
-        item: "action",
         label: "Actions",
         icon: 'lock',
-        path: "/action_template/template"
+        path: "/action_template"
       },
       {
-        item: "article",
         label: "Articles",
         icon: 'list',
-        path: "/article_template/template"
+        path: "/article_template"
       }
     ],
     layoutConfiguration: {
@@ -170,15 +167,11 @@ var defaultConfig = {
         'transform': {
           list: 'data',
           item: {
-
-
             title: "email",
             key: "reference_id",
             created_at: "created_at",
             avatar: 'email',
             description: 'email'
-
-
           },
           operate: [
             {
@@ -217,7 +210,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/article_display_template/form/{{reference_id}}",
+            "path": "/article_display_template/{{reference_id}}",
           }
         }
       },
@@ -307,7 +300,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/mail_form_template/template/{{reference_id}}",
+            "path": "/mail_form_template/{{reference_id}}",
           },
         },
         template: "card-view-1"
@@ -339,7 +332,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/user_form_template/template/{{reference_id}}",
+            "path": "/user_form_template/{{reference_id}}",
           },
         }
       },

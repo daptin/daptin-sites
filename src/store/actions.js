@@ -12,6 +12,22 @@ export default {
   setPath: ({commit, state}, path) => {
     commit("SET_PATH", path)
   },
+  createTemplate: ({commit, state}, template) => {
+    commit("NEW_TEMPLATE", template)
+  },
+  refreshModels: ({commit, state}) => {
+    return new Promise(function (resolve, reject) {
+      daptinClient.worldManager.loadModels().then(function () {
+        const worlds = daptinClient.worldManager.getWorlds().map(function (e) {
+          e.schema = JSON.parse(e.world_schema_json)
+          return e;
+        });
+        console.log("world models", worlds)
+        commit("SET_WORLD_MODELS", worlds);
+        resolve(worlds);
+      }).catch(reject)
+    });
+  },
   loginUser: ({commit, state}, credentials) => {
     return new Promise(function (resolve, reject) {
       daptinClient.actionManager.doAction("user_account", "signin", {
@@ -77,8 +93,15 @@ export default {
       }
     })
   },
+  addNewTab: ({commit, state}, params) => {
+    console.log("add tab", params)
+    state.appLayout.tabs.push(params)
+  },
   refreshData: ({commit, state}, params) => {
 
+    if (!state.currentLayout) {
+      return
+    }
     if (!state.currentLayout.params) {
       state.currentLayout.params = {}
     }

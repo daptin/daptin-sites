@@ -1,7 +1,16 @@
-
 export default {
   SET_ACTIVE_TYPE: (state, {type}) => {
     state.activeType = type
+  },
+  NEW_TEMPLATE: (state, template) => {
+    state.appLayout.templates.push({
+      name: template.name,
+      template: "<div>New template <br>{{localData}}</div>"
+    })
+  },
+  SET_WORLD_MODELS: (state, models) => {
+    state.worldModels = models
+    console.log("path set")
   },
   SET_PATH: (state, path) => {
     state.path = path;

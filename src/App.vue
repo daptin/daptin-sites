@@ -13,11 +13,12 @@
       ...mapGetters([
         'appLayout',
       ]),
-      ...mapState(['path'])
+      ...mapState(['path', 'models'])
 
     },
     name: "App",
     mounted: function () {
+      this.refreshModels();
       for (var i = 0; i < this.appLayout.templates.length; i++) {
         let template = this.appLayout.templates[i];
         //console.log("register template", template)
@@ -43,7 +44,7 @@
       this.saveConfig()
     },
     methods: {
-      ...mapActions(['saveConfig', 'setPath'])
+      ...mapActions(['saveConfig', 'setPath', 'refreshModels'])
     },
     watch: {
       'path': function (val) {
