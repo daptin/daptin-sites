@@ -49,7 +49,7 @@
                 ...mapActions(['fireEvent'])
               },
               beforeDestroy: function () {
-                console.log("destroying tempplate", t);
+                console.log("destroying template", t);
                 if (this.styleTag) {
                   this.styleTag.remove()
                 }
