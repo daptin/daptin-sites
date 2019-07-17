@@ -3,131 +3,129 @@
 
   <q-layout view="hhh lpR fFf">
 
+    <q-page-container>
 
-    <q-drawer v-model="left" side="left" bordered>
+      <q-drawer :width="300" v-model="left" side="left" bordered>
 
-      <q-list>
-        <template v-for="(menuItem, index) in appLayout.tabs">
-          <q-item @click="setTab(menuItem)" :key="index" clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon :name="menuItem.icon"/>
-            </q-item-section>
-            <q-item-section>
-              {{ menuItem.label }}
-            </q-item-section>
+        <q-list>
+          <template v-for="(menuItem, index) in appLayout.tabs">
+            <q-item @click="setTab(menuItem)" :key="index" clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon :name="menuItem.icon"/>
+              </q-item-section>
+              <q-item-section>
+                {{ menuItem.label }}
+              </q-item-section>
+            </q-item>
+
+            <q-separator v-if="menuItem.separator" :key="'sep_'  + index"/>
+
+          </template>
+          <q-item>
+            <q-btn label="Add tab" @click="newTabNameDialog = true" style="width: 100%"></q-btn>
           </q-item>
 
-          <q-separator v-if="menuItem.separator" :key="'sep_'  + index"/>
 
-        </template>
-        <q-item>
-          <q-btn label="Add tab" @click="newTabNameDialog = true" style="width: 100%"></q-btn>
-        </q-item>
+        </q-list>
 
 
-      </q-list>
+        <!-- drawer content -->
+      </q-drawer>
 
-
-      <!-- drawer content -->
-    </q-drawer>
-
-    <q-page-container>
 
       <q-page>
         <div class="col-12" v-for="(screen, i) in screens" :key="i">
-          <div class="q-gutter-md row items-start">
-            <div class="q-gutter-md row items-start">
 
 
-              <q-card-section>
-                <h3>{{screen.layoutName}}</h3>
-              </q-card-section>
+          <q-bar>
+            Layout &nbsp;
+            <q-select borderless :options="Object.keys(appLayout.layoutConfiguration)"
+                      v-model="screen.layoutName"></q-select>
+            <q-space/>
+            <q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>
+          </q-bar>
+          <div class="row">
+            <q-icon style="font-size: 4rem;" :name="tab.icon"/>
+            <q-input v-model="tab.label"></q-input>
 
-              <q-card-section>
-                <q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>
-                <q-btn color="green" label="New action"></q-btn>
-              </q-card-section>
+            <q-select filled @input="updateScreenType(screen)" size="sm" v-model="screen.layout.type"
+                      :options="['list', 'single']"/>
+            <q-select filled map-options emit-value size="sm" v-model="screen.layout.item"
+                      option-value="table_name"
+                      option-label="table_name" :options="models"/>
+            <q-select filled use-input use-chips new-value-mode="add-unique" @new-value="newTemplate"
+                      @input="updateScreenTemplate(screen, i)" map-options emit-value
+                      :options="appLayout.templates" option-label="name"
+                      option-value="name"
+                      v-model="screen.layout.template"></q-select>
+
+          </div>
+          <div class="row" style="height: 450px">
+            <div class="col-3">
+              <iframe style="width: 100%; height: 450px; z-index: -1"
+                      class="flower preview-frame"
+                      :src="screen.path"></iframe>
+
+            </div>
+            <div class="col-9" style="height: 100%">
+              <editor v-model="screen.template.template" @input="updateTemplate(screen.template)" width="100%"
+                      height="450px" theme="monokai" lang="html"></editor>
             </div>
           </div>
           <div class="row">
-            <div class="col-3">
-              <iframe style="width: 100%; height: 100%; z-index: -1"
-                      class="flower preview-frame"
-                      :src="screen.path"></iframe>
-              <div style="width: 100%; height: 100%; z-index: 1"></div>
+            <div class="col-3" style="overflow-x: hidden; overflow-y:scroll;">
 
+              <q-bar>
+                Mapping
+              </q-bar>
+              <table style="width: 100%;">
+                <tbody>
+
+                <tr v-for="key in Object.keys(screen.layout.transform.item)" :key="key">
+                  <td style="width: 40%">
+                    {{key}}
+                  </td>
+                  <td style="padding: 0">
+                    <v-select :reduce="col => col.ColumnName"
+                              v-model="screen.layout.transform.item[key]" :options="screen.table.schema.Columns"
+                              value="ColumnName" label="ColumnName"></v-select>
+                  </td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </table>
             </div>
-            <div class="col-6" style="height: 100%">
-
-
-              <q-card bordered class="my-card">
-                <q-card-section>
-                  <div class="q-gutter-md row items-start">
-
-                    <q-select style="width: 60px" size="sm" v-model="screen.layout.type"
-                              :options="['list', 'single']"/>
-                    <q-select map-options emit-value style="width: 150px" size="sm" v-model="screen.layout.item"
-                              option-value="table_name"
-                              option-label="table_name" :options="models"/>
-                    <q-select use-input use-chips new-value-mode="add-unique" @new-value="newTemplate"
-                              @input="updateScreenTemplate(screen, i)" map-options emit-value style="width: 200px"
-                              :options="appLayout.templates" option-label="name"
-                              option-value="name"
-                              v-model="screen.layout.template"></q-select>
-                  </div>
-                </q-card-section>
-
-                <q-card-section>
-                  <editor v-model="screen.template.template" @input="updateTemplate(screen.template)" width="100%"
-                          height="450px" lang="vue"></editor>
-                </q-card-section>
-              </q-card>
-
-
+            <div class="col-4">
+              <q-bar>CSS Style</q-bar>
+              <editor v-model="screen.template.style" lang="css" theme="monokai" style="height: 100%">css</editor>
             </div>
-            <div class="col-3">
-              <div class="row">
-                <div class="col-12">
+            <div class="col-5">
+              <q-bar>Actions</q-bar>
+              <table style="margin-top: 0" class="ui celled table">
+                <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Type</th>
+                  <th>To</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(action) in Object.keys(screen.layout.actions)" :key="action">
+                  <td>{{action}}</td>
+                  <td>{{screen.layout.actions[action].type}}</td>
+                  <td>
 
-                  <div class="text-h4">Actions</div>
-                  <q-card flat bordered v-for="(actionConfig, actionName) in screen.layout.actions" :key="actionName">
-                    <q-card-section>
-                      <sui-segment>
-                        <h2>{{actionName}}</h2>
-                        <q-form>
-
-                          <q-input v-model="actionConfig.path"/>
-                          <q-btn size="xs" color="red" label="Delete"></q-btn>
-                        </q-form>
-                      </sui-segment>
-                    </q-card-section>
-                  </q-card>
-
-                </div>
-                <div class="col-12" style="max-height: 200px; overflow-y: scroll; overflow-x: hidden">
-                  <table>
-                    <tbody>
-
-                    <tr v-for="column in screen.table.schema.Columns" :key="column.Name">
-                      <td>
-                        {{column.Name}}
-                      </td>
-                      <td style="padding: 0">
-                        <input style="height: 100%; border: none"
-                               v-model="screen.layout.transform.item[column.Name]"/>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                    <v-select style="min-width: 200px"
+                              :options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"
+                              v-model="screen.layout.actions[action].path"></v-select>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
             </div>
+
           </div>
         </div>
-        <div class="col-12" v-if="tab">
-          <q-btn label="Add screen" size="lg"></q-btn>
-        </div>
-
       </q-page>
 
 
@@ -141,7 +139,7 @@
 
         <q-card-section>
           <q-input v-model="newTabName" placeholder="New Tab Label"></q-input>
-          <q-select use-input @new-value="newLayout" size="sm" v-model="newTabLayout" :options="layouts"
+          <q-select use-input use-chips @new-value="newLayout" size="sm" v-model="newTabLayout" :options="layouts"
                     label="Layout"/>
           <q-select v-model="newTabIcon" option-label="id" option-value="id" :options="icons" label="Icon">
           </q-select>
@@ -200,6 +198,7 @@
   import {openURL} from "quasar";
   import {mapGetters, mapActions} from 'vuex';
   import Mustache from 'mustache';
+  import Vue from 'vue';
 
   export default {
     watch: {
@@ -229,21 +228,6 @@
         'models',
         'icons'
       ]),
-
-      transformedFlowerData() {
-        const data = {
-          name: 'Top Level',
-          children: this.screens.map(screen => ({
-            ...screen,
-            size: 0,
-            parent: 'Top Level'
-          }))
-        };
-        console.log("transformed data", data);
-        return data;
-      },
-
-
     },
     name: "MyLayout",
     data() {
@@ -259,25 +243,29 @@
         newTabTemplate: '',
         layouts: [],
         newTabItem: 'user_account',
-        newTabName: '',
-        newTabIcon: '',
+        newTabName: null,
+        newTabIcon: null,
         newScreenName: '',
         newActionName: '',
-        templateMap: {}
+        templateMap: {},
+        data: null,
       };
     },
     methods: {
       newLayout(name, done) {
         console.log("add new layout", name)
         if (!this.appLayout.layoutConfiguration[name]) {
-          this.appLayout[name] = {
+          const templateName = name + "_template";
+          this.newTemplate(templateName, function () {
+          })
+          this.appLayout.layoutConfiguration[name] = {
             type: "list",
             item: "user_account",
             transform: {
               list: "data",
               item: {}
             },
-            template: "card-view-1"
+            template: templateName
           };
           this.layouts.push(name)
         }
@@ -285,8 +273,29 @@
       },
       newTemplate(newTemplateName, done) {
         console.log("new template name", arguments)
-        this.createTemplate({name: newTemplateName})
+        this.createTemplate({
+          name: newTemplateName
+        })
         done(newTemplateName, "add-unique")
+      },
+      updateScreenType(screen) {
+        console.log("update screen type", screen)
+        const existingPath = screen.path;
+        let newPath = null;
+        if (screen.layout.type == "list") {
+          newPath = "/" + screen.layoutName;
+        } else {
+          newPath = "/" + screen.layoutName + "/{{reference_id}}";
+        }
+        if (newPath) {
+
+          for (var i = 0; i < this.appLayout.tabs.length; i++) {
+            if (this.appLayout.tabs[i].path == existingPath) {
+              this.appLayout.tabs[i].path = newPath;
+            }
+          }
+          this.saveConfig()
+        }
       },
       updateScreenTemplate(screen, frameIndex) {
         if (!screen.layout.template) {
@@ -344,14 +353,6 @@
         console.log("push ");
         const layout = this.appLayout.layoutConfiguration[layoutName];
         console.log("push layout actions", layout);
-
-        if (!layout.actions) {
-          return
-        }
-
-        const actionNames = Object.keys(layout.actions);
-
-
         this.screens.push({
           parent: "Top Level",
           path: path,
@@ -364,12 +365,21 @@
         });
 
 
+        if (!layout.actions) {
+          return
+        }
+
+        const actionNames = Object.keys(layout.actions);
+
+
         this.getData({
           layout: layout,
           params: {}
         }).then(function (data) {
           console.log("loaded data for layout", data);
           var toExplore = [];
+          that.data = data;
+          return;
           for (var i in actionNames) {
             const actionName = actionNames[i];
             const action = layout.actions[actionName];

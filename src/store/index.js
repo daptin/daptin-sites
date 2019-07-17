@@ -102,6 +102,7 @@ var defaultConfig = {
           "      {{localData}}\n" +
           "    </div>\n" +
           "  </q-page>",
+        style: "",
       }
     ],
     tabs: [
@@ -241,7 +242,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/article_display_template/article1/{{reference_id}}",
+            "path": "/article_display_template/{{reference_id}}",
           }
         }
       },
@@ -271,7 +272,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/action_form_template/form/{{reference_id}}",
+            "path": "/action_form_template/{{reference_id}}",
           },
           "ItemSingleDelete": {
             "type": "action"

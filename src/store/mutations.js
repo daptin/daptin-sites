@@ -5,7 +5,8 @@ export default {
   NEW_TEMPLATE: (state, template) => {
     state.appLayout.templates.push({
       name: template.name,
-      template: "<div>New template <br>{{localData}}</div>"
+      template: "<div>New template <br>{{localData}}</div>",
+      style: ".class-name{\n font-size: 14px;\n}",
     })
   },
   SET_WORLD_MODELS: (state, models) => {
