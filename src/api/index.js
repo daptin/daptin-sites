@@ -1,7 +1,7 @@
 // this is aliased in webpack config based on server/client build
 import {DaptinClient} from 'daptin-client'
 
-const logRequests = !!process.env.DEBUG_API;
+const logRequests = !!process.env.DAPTIN_API;
 
 
 const daptinClient = new DaptinClient(process.env.DAPTIN_ENDPOINT, logRequests);

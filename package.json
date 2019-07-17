@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
+    "build": "npm run ",
     "start": "quasar dev -m pwa"
   },
   "dependencies": {
