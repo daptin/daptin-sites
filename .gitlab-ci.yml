@@ -1,0 +1,10 @@
+include:
+- template: Auto-DevOps.gitlab-ci.yml
+
+compile:
+  stage: build
+  script:
+  - npm run build
+  artifacts:
+    paths:
+    - dist/spa
