@@ -1,3 +1,11 @@
+image: node:latest
+
+
+cache:
+  paths:
+  - node_modules/
+
+
 compile:
   stage: build
   script:
