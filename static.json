@@ -1,3 +1,11 @@
 {
-  "root": "dist/spa"
+  "root": "dist/spa",
+  "routes": {
+    "/assets/*": "/assets/",
+    "/statics/**": "/statics/",
+    "/img/*": "/img/",
+    "/css/*": "/css/",
+    "/js/*": "/js/",
+    "/**": "index.html"
+  }
 }

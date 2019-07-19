@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row justify-center">
       <div class="col-6 col-sm-8 col-xs-8 col-lg-2">
-        <img src="assets/daptin-logo-full.png" style="width: 200px"/>
+        <img src="/assets/daptin-logo-full.png" style="width: 200px"/>
       </div>
     </div>
     <div class="row">
