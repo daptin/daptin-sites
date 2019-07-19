@@ -16,14 +16,14 @@ stages:
 - cleanup
 
 
-cache:
-  paths:
-  - node_modules/
 
 
 compile:
   image: node:latest
   stage: compile
+  cache:
+    paths:
+    - node_modules/
   script:
   - npm install
   - npm run build
