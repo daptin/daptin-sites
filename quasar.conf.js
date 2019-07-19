@@ -48,6 +48,9 @@ module.exports = function (ctx) {
     supportIE: false,
 
     build: {
+      env: {
+        DAPTIN_ENDPOINT: JSON.stringify(process.env.DAPTIN_ENDPOINT)
+      },
       scopeHoisting: true,
       vueRouterMode: 'history',
       vueCompiler: true,
