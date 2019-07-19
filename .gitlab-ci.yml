@@ -27,6 +27,7 @@ cache:
 compile:
   stage: compile
   script:
+  - npm install
   - npm run build
   artifacts:
     paths:
