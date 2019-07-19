@@ -1,6 +1,3 @@
-image: node:latest
-
-
 stages:
 - compile
 - build
@@ -25,6 +22,7 @@ cache:
 
 
 compile:
+  image: node:latest
   stage: compile
   script:
   - npm install
