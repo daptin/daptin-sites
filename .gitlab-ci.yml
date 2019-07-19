@@ -25,6 +25,7 @@ compile:
     paths:
     - node_modules/
   script:
+  - export
   - npm install
   - npm run build
   artifacts:
