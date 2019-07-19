@@ -9,8 +9,8 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
-    "build": "npm run ",
-    "start": "quasar dev -m pwa"
+    "build": "node node_modules/@quasar/app/bin/quasar build pwa",
+    "start": "node node_modules/@quasar/app/bin/quasar -m pwa"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.54",

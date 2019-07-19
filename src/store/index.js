@@ -8,7 +8,7 @@ import daptinClient from '../api'
 
 Vue.use(Vuex);
 
-console.log(LocalStorage.getItem("config"))
+console.log(LocalStorage.getItem("config"));
 
 var defaultConfig = {
   user: token,
@@ -345,10 +345,8 @@ const token = LocalStorage.getItem("token");
 var state = JSON.parse(LocalStorage.getItem("config") || JSON.stringify(defaultConfig));
 
 
-console.log("localhost state ", state)
-if (!token) {
-
-} else {
+console.log("localhost state ", state);
+if (token) {
   state.user = token;
   state.token = token;
 }

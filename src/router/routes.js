@@ -1,5 +1,10 @@
 const routes = [
   {
+    path: "/login",
+    component: () => import("layouts/GuestLayout.vue"),
+    children: [{path: "", component: () => import("pages/Login.vue")}]
+  },
+  {
 
     path: "/make",
     component: () => import("layouts/MakerLayout.vue"),
@@ -27,11 +32,6 @@ const routes = [
         component: () => import("pages/TemplateView.vue")
       }
     ]
-  },
-  {
-    path: "/login",
-    component: () => import("layouts/GuestLayout.vue"),
-    children: [{path: "", component: () => import("pages/Login.vue")}]
   },
 ];
 
