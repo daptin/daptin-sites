@@ -18,6 +18,7 @@ export default {
     console.log("path set")
   },
   SAVE_CONFIG: (state) => {
+    console.log("storing config to localstorage")
     localStorage.setItem("config", JSON.stringify(state))
   },
   SET_LAYOUT: (state, layout) => {

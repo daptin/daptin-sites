@@ -23,7 +23,7 @@ var defaultConfig = {
   localData: null,
   currentLayout: null,
   appLayout: {
-    defaultTab: "user_account",
+    homeLayout: "home_layout",
     style: {
       background: "#e7e9ee",
     },
@@ -57,7 +57,8 @@ var defaultConfig = {
           "      </template>\n" +
           "    </div>\n" +
           "  </q-page>"
-      }, {
+      },
+      {
         name: "list-view-1",
         template: "<q-page>\n" +
           "\n" +
@@ -103,6 +104,10 @@ var defaultConfig = {
           "    </div>\n" +
           "  </q-page>",
         style: "",
+      },
+      {
+        name: "home-view",
+        template: "<div>Hello home: {{localData}}</div>"
       }
     ],
     tabs: [
@@ -128,6 +133,18 @@ var defaultConfig = {
       }
     ],
     layoutConfiguration: {
+      'home_layout': {
+        "item": "world",
+        "type": "list",
+        "title": "Home",
+        "transform": {
+          list: "data",
+          item: {
+            reference_id: "reference_id"
+          }
+        },
+        "template": "home-view"
+      },
       'mail_form_template': {
         "item": "mail",
         "type": "single",
@@ -211,7 +228,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/article_display_template/{{reference_id}}",
+            "params": {"path": "/article_display_template/{{reference_id}}",}
           }
         }
       },
@@ -242,7 +259,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/article_display_template/{{reference_id}}",
+            "params": {"path": "/article_display_template/{{reference_id}}",}
           }
         }
       },
@@ -272,7 +289,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/action_form_template/{{reference_id}}",
+            "params": {"path": "/action_form_template/{{reference_id}}",}
           },
           "ItemSingleDelete": {
             "type": "action"
@@ -301,7 +318,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/mail_form_template/{{reference_id}}",
+            "params": {"path": "/mail_form_template/{{reference_id}}",}
           },
         },
         template: "card-view-1"
@@ -333,7 +350,7 @@ var defaultConfig = {
         "actions": {
           "ItemSingleClick": {
             "type": "relocate",
-            "path": "/user_form_template/{{reference_id}}",
+            "params": {"path": "/user_form_template/{{reference_id}}",}
           },
         }
       },

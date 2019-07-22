@@ -42,6 +42,7 @@
             <q-select borderless :options="Object.keys(appLayout.layoutConfiguration)"
                       v-model="screen.layoutName"></q-select>
             <q-space/>
+            <q-btn label="New layout" color="green" @click="newLayoutDialog = true"></q-btn>
             <q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>
           </q-bar>
           <div class="row">
@@ -73,10 +74,12 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-3" style="overflow-x: hidden; overflow-y:scroll;">
+            <div class="col-3" style="">
 
               <q-bar>
                 Mapping
+                <q-space/>
+                <q-btn color="green" @click="newMappingDialog = true" label="New"></q-btn>
               </q-bar>
               <table style="width: 100%;">
                 <tbody>
@@ -100,13 +103,19 @@
               <editor v-model="screen.template.style" lang="css" theme="monokai" style="height: 100%">css</editor>
             </div>
             <div class="col-5">
-              <q-bar>Actions</q-bar>
-              <table style="margin-top: 0" class="ui celled table">
+              <q-bar>
+                Actions
+                <q-space/>
+                <q-btn color="green" @click="newActionNameDialog = true" label="New"></q-btn>
+              </q-bar>
+              <table style="margin-top: 0" class="ui celled table" v-if="screen.layout.actions">
                 <thead>
                 <tr>
                   <th>Action</th>
                   <th>Type</th>
                   <th>To</th>
+                  <th></th>
+                  <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -117,11 +126,20 @@
 
                     <v-select style="min-width: 200px"
                               :options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"
-                              v-model="screen.layout.actions[action].path"></v-select>
+                              v-model="screen.layout.actions[action].params.path"></v-select>
+                  </td>
+                  <td style="cursor: pointer;" @click="deleteAction(action)">
+                    <q-icon name="close"></q-icon>
+                  </td>
+                  <td style="cursor: pointer;" @click="setScreenByAction(action)">
+                    <q-icon name="arrow_forward"></q-icon>
                   </td>
                 </tr>
                 </tbody>
               </table>
+              <div v-if="!screen.layout.actions">
+                No Actions
+              </div>
             </div>
 
           </div>
@@ -171,20 +189,56 @@
       </q-card>
     </q-dialog>
 
-
-    <q-dialog v-model="newActionNameDialog" persistent>
+    <q-dialog v-model="newMappingDialog" persistent>
       <q-card style="min-width: 400px">
         <q-card-section>
-          <div class="text-h6">Tab name</div>
+          <div class="text-h6">Key name</div>
         </q-card-section>
 
         <q-card-section>
-          <q-input dense v-model="newTabName" autofocus @keyup.enter="prompt = false"/>
+          <q-input dense v-model="newMappingName" autofocus @keyup.enter="prompt = false"/>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup/>
-          <q-btn flat label="Add" @click="addTab(newTabName)" v-close-popup/>
+          <q-btn flat label="Add" @click="addNewMapping(newMappingName)" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="newLayoutDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Layout name</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input dense v-model="newLayoutName" autofocus @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Add" @click="newLayout(newLayoutName)" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="newActionNameDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Action Name</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input dense v-model="newActionName" label="Action Name" autofocus @keyup.enter="prompt = false"/>
+          <q-select dense v-model="newActionType" :options="['relocate', 'get', 'post', 'put', 'delete', 'action']"
+                    label="Action Type"
+                    autofocus @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Add" @click="addAction(newActionName, newActionType)" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -239,6 +293,9 @@
         newTabNameDialog: false,
         newScreenNameDialog: false,
         newActionNameDialog: false,
+        newMappingDialog: false,
+        newLayoutDialog: false,
+        newMappingName: '',
         newTabLayout: '',
         newTabTemplate: '',
         layouts: [],
@@ -247,8 +304,11 @@
         newTabIcon: null,
         newScreenName: '',
         newActionName: '',
+        newLayoutName: '',
+        newActionType: '',
         templateMap: {},
         data: null,
+        screenHistoryStack: []
       };
     },
     methods: {
@@ -256,8 +316,7 @@
         console.log("add new layout", name)
         if (!this.appLayout.layoutConfiguration[name]) {
           const templateName = name + "_template";
-          this.newTemplate(templateName, function () {
-          })
+          this.newTemplate(templateName)
           this.appLayout.layoutConfiguration[name] = {
             type: "list",
             item: "user_account",
@@ -269,14 +328,18 @@
           };
           this.layouts.push(name)
         }
-        done(name)
+        if (done) {
+          done(name)
+        }
       },
       newTemplate(newTemplateName, done) {
         console.log("new template name", arguments)
         this.createTemplate({
           name: newTemplateName
         })
-        done(newTemplateName, "add-unique")
+        if (done) {
+          done(newTemplateName, "add-unique")
+        }
       },
       updateScreenType(screen) {
         console.log("update screen type", screen)
@@ -305,6 +368,67 @@
         console.log("updated screen template ", screen)
         this.saveConfig();
         document.getElementsByClassName("preview-frame")[frameIndex].src = document.getElementsByClassName("preview-frame")[frameIndex].src + "";
+
+      },
+      addAction(actionName, type) {
+        console.log('add action', actionName, type)
+
+        if (!this.screens[0].layout.actions) {
+          this.screens[0].layout.actions = {};
+        }
+
+        this.screens[0].layout.actions[actionName] = {
+          type: type,
+          params: {}
+        }
+      },
+      addNewMapping(mappingName) {
+        console.log('add mapping', mappingName, this.screens)
+        this.screens[0].layout.transform.item[mappingName] = "";
+      },
+
+      deleteAction(actionName) {
+        console.log("delete action", actionName)
+        // delete this.screens[0].layout.actions[actionName];
+        Vue.delete(this.screens[0].layout.actions, actionName)
+      },
+      setScreenByAction(actionName) {
+        console.log("goto action", actionName)
+
+
+        const action = this.screens[0].layout.actions[actionName];
+
+        let newPath;
+        if (!action.params.path) {
+          console.log("action is not a relocation", action)
+          return
+        }
+        if (this.data instanceof Array) {
+          if (this.data.length == 0) {
+            console.log("no data to open next page: ", action, layout)
+            return
+          }
+          newPath = Mustache.render(action.params.path, this.data[0]);
+        } else {
+          newPath = Mustache.render(action.params.path, this.data);
+        }
+        var newLayoutName = newPath.split("/")[1];
+        const newLayout = this.appLayout.layoutConfiguration[newLayoutName]
+
+        console.log("register action name", action.params.path, newPath, action);
+        const currentScreen = this.screens.pop();
+        this.screenHistoryStack.push(currentScreen);
+        this.screens.push({
+          parent: currentScreen.path,
+          path: newPath,
+          name: action.params.path,
+          mappingName: newLayoutName,
+          template: this.templateMap.get(newLayout.template),
+          layout: newLayout,
+          layoutName: newLayoutName,
+          actionName: actionName,
+          table: this.getWorldSchema(newLayout.item)
+        });
 
       },
       addTab(tabName, newTabIcon, layout) {
@@ -369,67 +493,12 @@
           return
         }
 
-        const actionNames = Object.keys(layout.actions);
-
-
         this.getData({
           layout: layout,
           params: {}
         }).then(function (data) {
           console.log("loaded data for layout", data);
-          var toExplore = [];
           that.data = data;
-          return;
-          for (var i in actionNames) {
-            const actionName = actionNames[i];
-            const action = layout.actions[actionName];
-
-            let newPath;
-            if (!action.path) {
-              continue
-            }
-            if (data instanceof Array) {
-              if (data.length == 0) {
-                console.log("no data to open next page: ", action, layout)
-                continue
-              }
-              newPath = Mustache.render(action.path, data[0]);
-            } else {
-              newPath = Mustache.render(action.path, data);
-            }
-            var newLayoutName = newPath.split("/")[1];
-            const newLayout = that.appLayout.layoutConfiguration[newLayoutName]
-
-            console.log("register action name", action.path, newPath, action, layout);
-            that.screens.push({
-              parent: path,
-              path: newPath,
-              name: action.path,
-              mappingName: layoutName,
-              template: that.templateMap.get(newLayout.template),
-              layout: newLayout,
-              layoutName: newLayoutName,
-              actionName: actionName,
-              table: that.getWorldSchema(newLayout.item)
-            });
-
-
-            let exists = false;
-
-            for (var i = 0; i < that.screens.length; i++) {
-              if (that.screens[i].name == action.path) {
-                exists = true;
-              }
-            }
-
-            if (!exists) {
-              toExplore.push(action.path);
-            }
-          }
-
-          for (var i in toExplore) {
-            that.pushScreens(toExplore[i])
-          }
         })
 
 

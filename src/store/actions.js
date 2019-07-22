@@ -6,6 +6,9 @@ export default {
   setLayout: ({commit, state}, layout) => {
 
     console.log("set layout called", layout);
+    if (!layout) {
+      layout = state.appLayout.homeLayout;
+    }
     commit("SET_LAYOUT", state.appLayout.layoutConfiguration[layout]);
 
   },
@@ -50,13 +53,27 @@ export default {
       }
     }
   },
-  fireEvent: ({commit, state}, params) => {
-    console.log("single item clicked", params)
+  fireEvent: ({commit, state}, action) => {
+    console.log("single item clicked", action)
 
-    const action = state.currentLayout.actions[params.name]
-    const path = Mustache.render(action.path, state.data[params.index])
-    console.log("next path", path);
-    commit("SET_PATH", path)
+    const actionConfig = state.currentLayout.actions[action.name]
+
+
+    if (!actionConfig) {
+      console.log("no action defined")
+      return
+    }
+
+
+    switch (actionConfig.type) {
+      case "relocate":
+        const path = Mustache.render(actionConfig.params.path, action.params);
+        console.log("next path", path);
+        commit("SET_PATH", path)
+
+    }
+
+
   },
   saveConfig: ({commit, state}) => {
     commit("SAVE_CONFIG")

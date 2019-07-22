@@ -8,12 +8,6 @@ const routes = [
 
     path: "/make",
     component: () => import("layouts/MakerLayout.vue"),
-    children: [
-      {
-        path: "",
-        component: () => import("pages/Index.vue")
-      },
-    ]
   },
   {
     path: "/",
@@ -21,7 +15,8 @@ const routes = [
     children: [
       {
         path: "",
-        component: () => import("pages/Index.vue")
+        name: "Home",
+        component: () => import("pages/TemplateView.vue")
       },
       {
         path: "/:layout/:referenceId",

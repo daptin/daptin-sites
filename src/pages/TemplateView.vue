@@ -1,6 +1,7 @@
 <template>
   <q-page>
-    <component v-if="layout" v-bind:localData="localData" @item-single-click="itemSingleClick" v-bind:layout="layout" v-bind:is="layout.template"></component>
+    <component v-if="layout" v-bind:localData="localData" v-bind:layout="layout"
+               v-bind:is="layout.template"></component>
   </q-page>
 </template>
 
@@ -28,14 +29,6 @@
     },
     name: "TemplateView",
     methods: {
-      itemSingleClick(row, i) {
-        console.log("Clicked item", row, this.data[i]);
-        console.log("Layout action", this.layout);
-        const action = this.layout.actions["ItemSingleClick"]
-        const path = Mustache.render(action.path, this.data[i])
-        console.log("next path", path);
-        this.$router.push(path);
-      },
       loadData() {
         this.refreshData(this.$route.params.referenceId);
       },
@@ -43,6 +36,11 @@
     },
     mounted() {
       console.log("loaded template view", this.$route);
+      if (!this.user) {
+        this.$router.push("/login");
+        return
+      }
+
       this.setLayout(this.$route.params.layout);
       this.loadData();
     },
@@ -52,7 +50,7 @@
         this.setLayout(this.$route.params.layout);
         this.loadData();
       },
-      '$route': function(a) {
+      '$route': function (a) {
         console.log('route changed template view', arguments);
         this.setLayout(this.$route.params.layout);
         this.loadData();
