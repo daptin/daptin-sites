@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app">
+  <div id="q-app" v-touch-hold.mouse="setEndpoint">
     <router-view/>
   </div>
 </template>
@@ -82,7 +82,14 @@
       }
     },
     methods: {
-      ...mapActions(['saveConfig', 'setPath', 'refreshModels'])
+      ...mapActions(['saveConfig', 'setPath', 'refreshModels']),
+      setEndpoint() {
+        var newEndpoint = window.prompt("Set Endpoint", localStorage.getItem("DAPTIN_ENDPOINT") || "")
+        if (newEndpoint) {
+          localStorage.setItem("DAPTIN_ENDPOINT", newEndpoint);
+          // window.location = window.location + "";
+        }
+      },
     },
     watch: {
       'path': function (val) {
