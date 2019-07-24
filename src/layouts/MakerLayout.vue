@@ -8,6 +8,14 @@
       <q-drawer :width="300" v-model="left" side="left" bordered>
 
         <q-list>
+          <q-item @click="setTab('home')" :key="-1" clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="home"/>
+            </q-item-section>
+            <q-item-section>
+              Home
+            </q-item-section>
+          </q-item>
           <template v-for="(menuItem, index) in appLayout.tabs">
             <q-item @click="setTab(menuItem)" :key="index" clickable v-ripple>
               <q-item-section avatar>
@@ -61,20 +69,27 @@
                       v-model="screen.layout.template"></q-select>
 
           </div>
-          <div class="row" style="height: 450px">
+          <div class="row">
             <div class="col-3">
-              <iframe style="width: 100%; height: 450px; z-index: -1"
+              <iframe style="width: 100%; height: 100%; z-index: -1"
                       class="flower preview-frame"
                       :src="screen.path"></iframe>
 
             </div>
-            <div class="col-9" style="height: 100%">
-              <editor v-model="screen.template.template" @input="updateTemplate(screen.template)" width="100%"
+            <div class="col-5" style="height: 100%">
+              <q-bar>Template</q-bar>
+              <editor ref="templateEditor" v-model="screen.template.template" @input="updateTemplate(screen.template)"
+                      width="100%"
                       height="450px" theme="monokai" lang="html"></editor>
+            </div>
+            <div class="col-4" style="height: 100%">
+              <q-bar>CSS Style</q-bar>
+              <editor ref="cssEditor" height="450px" v-model="screen.template.style" lang="css"
+                      theme="monokai"></editor>
             </div>
           </div>
           <div class="row">
-            <div class="col-3" style="">
+            <div class="col-3">
 
               <q-bar>
                 Mapping
@@ -98,11 +113,7 @@
                 </tbody>
               </table>
             </div>
-            <div class="col-4">
-              <q-bar>CSS Style</q-bar>
-              <editor v-model="screen.template.style" lang="css" theme="monokai" style="height: 100%">css</editor>
-            </div>
-            <div class="col-5">
+            <div class="col-9">
               <q-bar>
                 Actions
                 <q-space/>
@@ -112,8 +123,8 @@
                 <thead>
                 <tr>
                   <th>Action</th>
-                  <th>Type</th>
-                  <th>To</th>
+                  <th style="width: 150px">Type</th>
+                  <th style="width: 400px">To</th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -121,12 +132,27 @@
                 <tbody>
                 <tr v-for="(action) in Object.keys(screen.layout.actions)" :key="action">
                   <td>{{action}}</td>
-                  <td>{{screen.layout.actions[action].type}}</td>
+                  <td >
+                    <v-select :options="['relocate', 'post', 'put', 'delete', 'action']"
+                              v-model="screen.layout.actions[action].type"></v-select>
+                  </td>
                   <td>
 
-                    <v-select style="min-width: 200px"
+                    <v-select v-if="screen.layout.actions[action].type == 'relocate'" style="min-width: 200px"
                               :options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"
                               v-model="screen.layout.actions[action].params.path"></v-select>
+
+                    <v-select v-if="screen.layout.actions[action].type == 'action'"
+                              :options="serverActions" value="action_name" label="label"
+                              v-model="screen.layout.actions[action].params.action_name"
+                              :reduce="val => val.action_name"></v-select>
+
+                    <v-select v-if="['post', 'put', 'delete'].indexOf(screen.layout.actions[action].type) > -1"
+                              :options="models" value="table_name" label="table_name"
+                              v-model="screen.layout.actions[action].params.table_name"
+                              :reduce="val => val.table_name"></v-select>
+
+
                   </td>
                   <td style="cursor: pointer;" @click="deleteAction(action)">
                     <q-icon name="close"></q-icon>
@@ -231,7 +257,7 @@
 
         <q-card-section>
           <q-input dense v-model="newActionName" label="Action Name" autofocus @keyup.enter="prompt = false"/>
-          <q-select dense v-model="newActionType" :options="['relocate', 'get', 'post', 'put', 'delete', 'action']"
+          <q-select dense v-model="newActionType" :options="['relocate', 'post', 'put', 'delete', 'action']"
                     label="Action Type"
                     autofocus @keyup.enter="prompt = false"/>
         </q-card-section>
@@ -280,7 +306,8 @@
         'user',
         'layout',
         'models',
-        'icons'
+        'icons',
+        'serverActions'
       ]),
     },
     name: "MyLayout",
@@ -452,14 +479,30 @@
         template.showSave = true;
       },
       openURL,
-      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate']),
+      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions']),
       setTab(tab) {
         console.log("load page", tab);
         // this.setLayout(tab.layout);
         // this.$router.push(tab.path);
+
+
+        if (tab == "home") {
+          tab = {
+            path: "/",
+            icon: "home",
+            label: "Home"
+          }
+        }
+
         this.screens = [];
         this.tab = tab;
         this.pushScreens(tab.path)
+        const that = this;
+        setTimeout(function () {
+
+          that.$refs.templateEditor[0].editor.setWrapBehavioursEnabled(true)
+          that.$refs.templateEditor[0].editor.setOption('wrap', 80);
+        }, 300)
       },
       getWorldSchema(worldName) {
         console.log("get world schema for", worldName)
@@ -473,10 +516,17 @@
       pushScreens(path) {
         const that = this;
         console.log("push screens from ", path);
-        const layoutName = path.split("/")[1];
+        var layoutName = path.split("/")[1];
         console.log("push ");
+
+        if (layoutName == "") {
+          layoutName = this.appLayout.homeLayout;
+        }
+
         const layout = this.appLayout.layoutConfiguration[layoutName];
-        console.log("push layout actions", layout);
+
+        let worldSchema = this.getWorldSchema(layout.item);
+        console.log("push layout actions", layout, worldSchema);
         this.screens.push({
           parent: "Top Level",
           path: path,
@@ -485,7 +535,7 @@
           layout: layout,
           layoutName: layoutName,
           actionName: "TabItemClick",
-          table: this.getWorldSchema(layout.item)
+          table: worldSchema
         });
 
 
@@ -505,6 +555,7 @@
       },
     },
     mounted() {
+      this.refreshActions();
       if (!this.user) {
         this.$router.push("/")
       }

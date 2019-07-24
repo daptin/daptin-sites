@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <component v-if="layout" v-bind:localData="localData" v-bind:layout="layout"
+    <component v-if="layout" v-bind:vars="vars" v-bind:localData="localData" v-bind:layout="layout"
                v-bind:is="layout.template"></component>
   </q-page>
 </template>
@@ -24,7 +24,8 @@
         'data',
         'localData',
         'layout',
-        'pagination'
+        'pagination',
+        'vars'
       ]),
     },
     name: "TemplateView",

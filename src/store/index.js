@@ -8,13 +8,15 @@ import daptinClient from '../api'
 
 Vue.use(Vuex);
 
-console.log(LocalStorage.getItem("config"));
+let appConfig = LocalStorage.getItem("config");
+console.log(appConfig);
 
 var defaultConfig = {
-  user: token,
-  token: token,
+  user: null,
+  token: null,
   currentTab: null,
   item: null,
+  vars: {},
   path: null,
   type: null,
   loaded: false,
@@ -107,7 +109,22 @@ var defaultConfig = {
       },
       {
         name: "home-view",
-        template: "<div>Hello home: {{localData}}</div>"
+        template: "<div>\n" +
+          "    Hello home\n" +
+          "    \n" +
+          "    <q-input label='Mobile number' v-model=\"vars.mobile_number\"></q-input>\n" +
+          "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
+          "    \n" +
+          "    <table>\n" +
+          "        <tr v-for=\"row in localData\" >\n" +
+          "           <td> {{row.title}}</td>\n" +
+          "           <td>\n" +
+          "               <q-btn @click=\"fireEvent({name: 'deleteThisAction', params: row.reference_id})\" label=\"Delete\"></q-btn>\n" +
+          "           </td>\n" +
+          "        </tr>\n" +
+          "    </table>\n" +
+          "    \n" +
+          "</div>"
       }
     ],
     tabs: [
@@ -134,13 +151,14 @@ var defaultConfig = {
     ],
     layoutConfiguration: {
       'home_layout': {
-        "item": "world",
+        "item": "action",
         "type": "list",
         "title": "Home",
         "transform": {
           list: "data",
           item: {
-            reference_id: "reference_id"
+            reference_id: "reference_id",
+            title: "action_name",
           }
         },
         "template": "home-view"
@@ -292,7 +310,8 @@ var defaultConfig = {
             "params": {"path": "/action_form_template/{{reference_id}}",}
           },
           "ItemSingleDelete": {
-            "type": "action"
+            "type": "action",
+            "params": {}
           }
         }
       },
@@ -359,7 +378,7 @@ var defaultConfig = {
 };
 
 const token = LocalStorage.getItem("token");
-var state = JSON.parse(LocalStorage.getItem("config") || JSON.stringify(defaultConfig));
+var state = JSON.parse(appConfig || JSON.stringify(defaultConfig));
 
 
 console.log("localhost state ", state);

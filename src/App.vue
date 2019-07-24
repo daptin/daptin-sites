@@ -35,7 +35,7 @@
           Vue.component(t.name, function (resolve, reject) {
             resolve({
               template: t.template,
-              props: ['localData', 'layout'],
+              props: ['localData', 'layout', 'vars'],
               data: function () {
                 return {
                   styleTag: null,
@@ -46,7 +46,7 @@
                   // console.log("single item clicked", arguments)
                   // this.$emit("item-single-clicked", row, i)
                 },
-                ...mapActions(['fireEvent'])
+                ...mapActions(['fireEvent', 'setVar'])
               },
               beforeDestroy: function () {
                 console.log("destroying template", t);
@@ -55,7 +55,12 @@
                 }
               },
               mounted: function () {
-                console.log("mounted view: ", t, this.appLayout)
+                console.log("mounted view: ", t, this.appLayout);
+
+                if (!this.vars) {
+                  this.vars = {}
+                }
+
                 test()
                 if (t.style) {
                   const css = t.style,

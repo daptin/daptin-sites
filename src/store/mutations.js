@@ -13,6 +13,11 @@ export default {
     state.worldModels = models
     console.log("path set")
   },
+  SET_ACTIONS: (state, actions) => {
+
+    state.serverActions = actions;
+
+  },
   SET_PATH: (state, path) => {
     state.path = path;
     console.log("path set")
@@ -20,6 +25,9 @@ export default {
   SAVE_CONFIG: (state) => {
     console.log("storing config to localstorage")
     localStorage.setItem("config", JSON.stringify(state))
+  },
+  SET_VAR: (state, params) => {
+    state.vars[params.key] = params.value;
   },
   SET_LAYOUT: (state, layout) => {
     console.log("set layout", layout)

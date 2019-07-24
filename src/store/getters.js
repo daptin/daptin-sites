@@ -1,4 +1,3 @@
-import daptinClient from '../api'
 
 export default {
   // ids of the items that should be currently displayed based on
@@ -22,6 +21,9 @@ export default {
   activeItems(state, getters) {
     return getters.activeIds.map(id => state.items[id]).filter(_ => _)
   },
+  serverActions (state) {
+    return state.serverActions
+  },
   user(state) {
     return state.user;
   },
@@ -42,6 +44,9 @@ export default {
   },
   path(state) {
     return state.path
+  },
+  vars(state) {
+    return state.vars
   },
   models(state) {
     if (!state.worldModels) {
