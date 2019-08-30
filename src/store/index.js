@@ -17,6 +17,8 @@ var defaultConfig = {
   currentTab: null,
   item: null,
   vars: {},
+  pagination: {},
+  filters: {},
   path: null,
   type: null,
   loaded: false,
@@ -124,7 +126,10 @@ var defaultConfig = {
           "        </tr>\n" +
           "    </table>\n" +
           "    \n" +
-          "</div>"
+          "</div>",
+        actions: [
+          'deleteThisAction'
+        ]
       }
     ],
     tabs: [

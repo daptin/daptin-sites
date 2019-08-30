@@ -69,6 +69,10 @@ export default {
       }
     }
   },
+  setPagination: ({commit, state}, params) => {
+    commit("SET_PAGINATION", params)
+    commit("")
+  },
   fireEvent: ({commit, state}, action) => {
     console.log("single item clicked", action);
 

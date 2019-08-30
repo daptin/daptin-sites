@@ -12,6 +12,7 @@ module.exports = function (ctx) {
     ],
 
     css: [
+      'canvas.css',
       'app.styl'
     ],
 
