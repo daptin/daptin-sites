@@ -248,19 +248,30 @@
 
     <q-dialog v-model="iconSelection" style="width: 300px; height: 200px">
       <q-card>
-        <div class="row">
-          <div class="col-12">
-            <input>
+        <q-card-section>
+          <input v-model="iconSearchText">
+
+        </q-card-section>
+        <q-card-section>
+          <div class="row">
+            <div @click="setIcon(icon)" class="col-4 select-icon" style="padding: 20px; text-align: center"
+                 v-for="icon in currentPageIcons"
+                 :key="icon.id">
+              <q-icon size="xl" style="font-size: 40px" :name="icon.id"></q-icon>
+              <br>
+              <span>{{icon.id}}</span>
+            </div>
           </div>
-          <div class="col-1" v-for="icon in currentPageIcons" :key="icon.id">
-            <q-icon style="width: 50px; height: 50px;" :name="icon.id"></q-icon>
-          </div>
+        </q-card-section>
+        <q-card-section>
           <div class="col-12">
             <q-pagination
               v-model="currentIconPage"
-              :max="5"></q-pagination>
+              :boundary-numbers="true"
+              :max-pages="6"
+              :max="parseInt((icons.length / iconsPerPage)) + 1"></q-pagination>
           </div>
-        </div>
+        </q-card-section>
 
       </q-card>
     </q-dialog>
@@ -326,7 +337,15 @@
         'serverActions'
       ]),
       currentPageIcons: function () {
-        return this.icons.slice((this.currentIconPage - 1) * 10, this.currentIconPage * 10)
+        const that = this;
+        if (this.iconSearchText == null || this.iconSearchText.trim().length == 0) {
+          return this.icons.slice((this.currentIconPage - 1) * this.iconsPerPage, this.currentIconPage * this.iconsPerPage)
+        } else {
+          return this.icons.filter(function (e) {
+            // console.log('search in', e, that.iconSearchText)
+            return e.id.indexOf(that.iconSearchText) > -1;
+          }).slice((this.currentIconPage - 1) * this.iconsPerPage, this.currentIconPage * this.iconsPerPage)
+        }
       }
     },
     name: "MyLayout",
@@ -344,6 +363,7 @@
         newMappingDialog: false,
         newLayoutDialog: false,
         currentIconPage: 1,
+        iconsPerPage: 12,
         newMappingName: '',
         newTabLayout: '',
         newTabTemplate: '',
@@ -352,6 +372,7 @@
         newTabName: null,
         newTabIcon: null,
         newScreenName: '',
+        iconSearchText: null,
         newActionName: '',
         newLayoutName: '',
         newActionType: '',
@@ -361,6 +382,11 @@
       };
     },
     methods: {
+      setIcon(icon) {
+        console.log("set icon")
+        this.screens[0].icon = icon.id
+        this.iconSelection = false;
+      },
       newLayout(name, done) {
         console.log("add new layout", name)
         if (!this.appLayout.layoutConfiguration[name]) {
