@@ -4,21 +4,25 @@
   <q-layout view="hhh lpR fFf">
 
 
-    <q-drawer content-class="bg-grey-3" :width="200" v-model="left" side="left" bordered>
+    <q-drawer content-class="primary-color" color="#272643" :width="200" v-model="left" side="left" bordered>
 
       <q-list>
-        <q-item-label header>Make</q-item-label>
+        <q-item-label header><h3 style="color: white">Make</h3></q-item-label>
 
-        <q-item>
+        <q-item clickable @click.native="selectedTab = 'appSetting'"
+                :class="{'selected-maker-tab': selectedTab == 'appSetting'}">
           <q-item-section>App Layout</q-item-section>
         </q-item>
-        <q-item>
+        <q-item clickable @click.native="selectedTab = 'screens'"
+                :class="{'selected-maker-tab': selectedTab == 'screens'}">
           <q-item-section>Screens</q-item-section>
         </q-item>
-        <q-item>
+        <q-item clickable @click.native="selectedTab = 'events'"
+                :class="{'selected-maker-tab': selectedTab == 'events'}">
           <q-item-section>Events</q-item-section>
         </q-item>
-        <q-item>
+        <q-item clickable @click.native="selectedTab = 'publish'"
+                :class="{'selected-maker-tab': selectedTab == 'publish'}">
           <q-item-section>Publish</q-item-section>
         </q-item>
 
@@ -31,180 +35,139 @@
 
     <q-page-container>
 
+      <div class="row" v-if="selectedTab == 'appSetting'">
 
-      <q-page style="background: rgba(81,196,121,0.02)">
+        <div class="col-12" style="padding: 10vh 25vw">
 
-        <div class="row">
+          <form>
+
+            <div>
+              <label>Daptin End point</label>
+              <input class="d-input" v-model="appLayout.endpoint" type="text">
+            </div>
+            <div>
+              <label>PRIMARY COLOR HEX CODE</label>
+              <input class="d-input" v-model="appLayout.style.background" type="text">
+            </div>
+
+            <div>
+              <label>Logo URL</label>
+              <input class="d-input" type="text">
+            </div>
+
+            <q-btn style="margin-top: 20px" color="blue" @click="selectedTab = 'screens'">Next</q-btn>
 
 
-          <div class="col-1">
-            <div class="row">
-              <q-item-label header>Tabs</q-item-label>
+          </form>
 
-              <div class="col-12" @click="setTab('home')" :key="-1" clickable v-ripple>
-                <q-icon name="home" size="xl"/>
-                Home
+        </div>
+
+      </div>
+
+
+      <div style="height: 100vh" class="row" v-if="selectedTab == 'screens'">
+
+
+        <div class="col-1">
+          <div class="row" style="text-align: center; overflow-y: scroll; height: 100vh; overflow-x: hidden">
+            <div class="col-12" style="text-align: left; margin: 20px;">
+              <h3 style="color: black">Tabs</h3>
+            </div>
+
+            <div class="col-12 tab-icon" style="padding-bottom: 20px;" @click="setTab('home')" :key="-1" clickable
+                 v-ripple>
+              <q-icon style="width: 100%; font-size: 70px;" name="home" size="xl"/>
+              <span style="font-weight: bolder">Home</span>
+            </div>
+
+
+            <template v-for="(menuItem, index) in appLayout.tabs">
+              <div class="col-12 tab-icon" style="padding-top: 30px; padding-bottom: 20px;" @click="setTab(menuItem)"
+                   :key="index" clickable v-ripple>
+                <q-icon :name="menuItem.icon" size="xl" style="width: 100%; font-size: 70px;"/>
+                <span style="font-weight: bolder">{{ menuItem.label }}</span>
               </div>
+            </template>
+            <div class="col-12" style="padding: 30px">
+              <q-btn size="sm" color="black" background="white" @click="newTabNameDialog = true" icon="add"></q-btn>
+            </div>
+          </div>
+        </div>
 
 
-              <template v-for="(menuItem, index) in appLayout.tabs">
-                <div class="col-12" @click="setTab(menuItem)" :key="index" clickable v-ripple>
-                  <q-icon :name="menuItem.icon" size="xl"/>
-                  {{ menuItem.label }}
+        <div class="col-11" v-for="(screen, i) in screens" :key="i">
+
+
+          <div style=" height: 100%" class="row">
+
+
+            <div class="col-8" style="background: #ebf1f4;padding-top: 150px; padding-left: 250px">
+              <iframe style="width: 100%; max-width: 320px; min-height: 500px; z-index: -1"
+                      class="flower preview-frame"
+                      :src="screen.path"></iframe>
+            </div>
+
+            <div class="col-3">
+              <div class="row" style="padding: 20px">
+                <h2>Tab details</h2>
+              </div>
+              <div class="row">
+
+
+                <div class="col-12" style="padding: 10px;">
+                  Tab Name
                 </div>
 
-                <q-separator v-if="menuItem.separator" :key="'sep_'  + index"/>
+                <div class="col-8" style="padding: 10px;">
+                  <q-input v-model="tab.label"></q-input>
+                </div>
 
-              </template>
-              <q-item>
-                <q-btn @click="newTabNameDialog = true" icon="add"></q-btn>
-              </q-item>
-            </div>
-          </div>
-
-          <div style="background: #ebf1f4" class="col-8" v-for="(screen, i) in screens" :key="i">
+                <div class="col-3" style="margin: 10px;">
+                  <q-icon style="font-size: 4rem;" :name="tab.icon" @click.native="iconSelection = true"/>
+                </div>
 
 
-            <q-bar>
-              Layout &nbsp;
-              <q-select borderless :options="Object.keys(appLayout.layoutConfiguration)"
-                        v-model="screen.layoutName"></q-select>
-              <q-space/>
-              <q-btn label="New layout" color="green" @click="newLayoutDialog = true"></q-btn>
-              <q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>
-            </q-bar>
+                <div class="col-12" style="margin: 10px;">
+                  <q-select filled @input="updateScreenType(screen)" size="sm"
+                            v-model="screen.layout.type"
+                            :options="['list', 'single']"/>
+                </div>
 
 
-            <div class="row">
-              <q-icon style="font-size: 4rem;" :name="tab.icon"/>
-              <q-input v-model="tab.label"></q-input>
+                <div class="col-12" style="margin: 10px;">
+                  <q-select filled map-options emit-value size="sm" v-model="screen.layout.item"
+                            option-value="table_name"
+                            option-label="table_name" :options="models"/>
+                </div>
+                <div class="col-12" style="margin: 10px;">
 
-              <q-select filled @input="updateScreenType(screen)" size="sm" v-model="screen.layout.type"
-                        :options="['list', 'single']"/>
-              <q-select filled map-options emit-value size="sm" v-model="screen.layout.item"
-                        option-value="table_name"
-                        option-label="table_name" :options="models"/>
-              <q-select filled use-input use-chips new-value-mode="add-unique" @new-value="newTemplate"
-                        @input="updateScreenTemplate(screen, i)" map-options emit-value
-                        :options="appLayout.templates" option-label="name"
-                        option-value="name"
-                        v-model="screen.layout.template"></q-select>
+                  <q-select filled
+                            @input="updateScreenTemplate(screen, i)" map-options emit-value
+                            :options="appLayout.templates" option-label="name"
+                            option-value="name"
+                            v-model="screen.layout.template"></q-select>
+                </div>
 
-            </div>
-            <div class="row">
-              <div class="col-3">
-                <iframe style="width: 100%; height: 100%; z-index: -1"
-                        class="flower preview-frame"
-                        :src="screen.path"></iframe>
+                <!--<div class="col-12">-->
+                <!--<q-select borderless :options="Object.keys(appLayout.layoutConfiguration)"-->
+                <!--v-model="screen.layoutName"></q-select>-->
+                <!--</div>-->
+
+                <!--<div class="col-12">-->
+                <!--<q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>-->
+                <!--<q-btn label="New layout" color="green" @click="newLayoutDialog = true"></q-btn>-->
+                <!--</div>-->
               </div>
-              <!--<div class="col-5" style="height: 100%">-->
-              <!--<q-bar>Template</q-bar>-->
-              <!--<editor ref="templateEditor" v-model="screen.template.template" @input="updateTemplate(screen.template)"-->
-              <!--width="100%"-->
-              <!--height="450px" theme="monokai" lang="html"></editor>-->
-              <!--</div>-->
-              <!--<div class="col-4" style="height: 100%">-->
-              <!--<q-bar>CSS Style</q-bar>-->
-              <!--<editor ref="cssEditor" height="450px" v-model="screen.template.style" lang="css"-->
-              <!--theme="monokai"></editor>-->
-              <!--</div>-->
+
             </div>
 
-
-            <!--<div class="row">-->
-            <!--<div class="col-3">-->
-
-            <!--<q-bar>-->
-            <!--Mapping-->
-            <!--<q-space/>-->
-            <!--<q-btn color="green" @click="newMappingDialog = true" label="New"></q-btn>-->
-            <!--</q-bar>-->
-            <!--<table style="width: 100%;">-->
-            <!--<tbody>-->
-
-            <!--<tr v-for="key in Object.keys(screen.layout.transform.item)" :key="key">-->
-            <!--<td style="width: 40%">-->
-            <!--{{key}}-->
-            <!--</td>-->
-            <!--<td style="padding: 0">-->
-            <!--<v-select :reduce="col => col.ColumnName"-->
-            <!--v-model="screen.layout.transform.item[key]" :options="screen.table.schema.Columns"-->
-            <!--value="ColumnName" label="ColumnName"></v-select>-->
-            <!--</td>-->
-            <!--<td></td>-->
-            <!--</tr>-->
-            <!--</tbody>-->
-            <!--</table>-->
-            <!--</div>-->
-            <!--<div class="col-9">-->
-            <!--<q-bar>-->
-            <!--Actions-->
-            <!--<q-space/>-->
-            <!--<q-btn color="green" @click="newActionNameDialog = true" label="New"></q-btn>-->
-            <!--</q-bar>-->
-            <!--<table style="margin-top: 0" class="ui celled table" v-if="screen.layout.actions">-->
-            <!--<thead>-->
-            <!--<tr>-->
-            <!--<th>Action</th>-->
-            <!--<th style="width: 150px">Type</th>-->
-            <!--<th style="width: 400px">To</th>-->
-            <!--<th></th>-->
-            <!--<th></th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody>-->
-            <!--<tr v-for="(action) in Object.keys(screen.layout.actions)" :key="action">-->
-            <!--<td>{{action}}</td>-->
-            <!--<td>-->
-            <!--<v-select :options="['relocate', 'post', 'put', 'delete', 'action']"-->
-            <!--v-model="screen.layout.actions[action].type"></v-select>-->
-            <!--</td>-->
-            <!--<td>-->
-
-            <!--<v-select v-if="screen.layout.actions[action].type == 'relocate'" style="min-width: 200px"-->
-            <!--:options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"-->
-            <!--v-model="screen.layout.actions[action].params.path"></v-select>-->
-
-            <!--<v-select v-if="screen.layout.actions[action].type == 'action'"-->
-            <!--:options="serverActions" value="action_name" label="label"-->
-            <!--v-model="screen.layout.actions[action].params.action_name"-->
-            <!--:reduce="val => val.action_name"></v-select>-->
-
-            <!--<v-select v-if="['post', 'put', 'delete'].indexOf(screen.layout.actions[action].type) > -1"-->
-            <!--:options="models" value="table_name" label="table_name"-->
-            <!--v-model="screen.layout.actions[action].params.table_name"-->
-            <!--:reduce="val => val.table_name"></v-select>-->
-
-
-            <!--</td>-->
-            <!--<td style="cursor: pointer;" @click="deleteAction(action)">-->
-            <!--<q-icon name="close"></q-icon>-->
-            <!--</td>-->
-            <!--<td style="cursor: pointer;" @click="setScreenByAction(action)">-->
-            <!--<q-icon name="arrow_forward"></q-icon>-->
-            <!--</td>-->
-            <!--</tr>-->
-            <!--</tbody>-->
-            <!--</table>-->
-            <!--<div v-if="!screen.layout.actions">-->
-            <!--No Actions-->
-            <!--</div>-->
-            <!--</div>-->
-
-            <!--</div>-->
-          </div>
-
-          <div class="col-3">
-            <div class="row">
-              <h2>Tab details</h2>
-            </div>
 
           </div>
 
 
         </div>
 
-      </q-page>
+      </div>
 
 
     </q-page-container>
@@ -283,6 +246,25 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="iconSelection" style="width: 300px; height: 200px">
+      <q-card>
+        <div class="row">
+          <div class="col-12">
+            <input>
+          </div>
+          <div class="col-1" v-for="icon in currentPageIcons" :key="icon.id">
+            <q-icon style="width: 50px; height: 50px;" :name="icon.id"></q-icon>
+          </div>
+          <div class="col-12">
+            <q-pagination
+              v-model="currentIconPage"
+              :max="5"></q-pagination>
+          </div>
+        </div>
+
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="newActionNameDialog" persistent>
       <q-card style="min-width: 400px">
         <q-card-section>
@@ -343,10 +325,14 @@
         'icons',
         'serverActions'
       ]),
+      currentPageIcons: function () {
+        return this.icons.slice((this.currentIconPage - 1) * 10, this.currentIconPage * 10)
+      }
     },
     name: "MyLayout",
     data() {
       return {
+        selectedTab: 'appSetting',
         flowers: [],
         tab: null,
         left: this.$q.platform.is.desktop,
@@ -354,8 +340,10 @@
         newTabNameDialog: false,
         newScreenNameDialog: false,
         newActionNameDialog: false,
+        iconSelection: false,
         newMappingDialog: false,
         newLayoutDialog: false,
+        currentIconPage: 1,
         newMappingName: '',
         newTabLayout: '',
         newTabTemplate: '',
@@ -532,11 +520,11 @@
         this.tab = tab;
         this.pushScreens(tab.path)
         const that = this;
-        setTimeout(function () {
-
-          that.$refs.templateEditor[0].editor.setWrapBehavioursEnabled(true)
-          that.$refs.templateEditor[0].editor.setOption('wrap', 80);
-        }, 300)
+        // setTimeout(function () {
+        //
+        //   that.$refs.templateEditor[0].editor.setWrapBehavioursEnabled(true)
+        //   that.$refs.templateEditor[0].editor.setOption('wrap', 80);
+        // }, 300)
       },
       getWorldSchema(worldName) {
         console.log("get world schema for", worldName)

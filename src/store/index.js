@@ -28,10 +28,10 @@ var defaultConfig = {
   currentLayout: null,
   appLayout: {
     homeLayout: "home_layout",
+    endpoint: "http://localhost:6336",
     style: {
-      background: "#e7e9ee",
+      background: "#ffffff",
     },
-    background: "#e7e9ee",
     templates: [
       {
         name: "card-view-1",
