@@ -158,7 +158,7 @@
                     <h3>
                       Mapping
                     </h3>
-                    <table style="width: 100%;" v-if="screen.table">
+                    <table style="width: 100%;" v-if="screen.table && templateMap[screen.layout.template]">
                       <tbody>
 
                       <tr v-for="key in templateMap[screen.layout.template].variables" :key="key">
@@ -271,6 +271,12 @@
 
         </div>
 
+      </div>
+
+      <div class="row" v-if="selectedTab == 'publish'">
+        <div class="col-12">
+          <h1>Publish</h1>
+        </div>
       </div>
 
 

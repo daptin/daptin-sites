@@ -9,7 +9,7 @@ import daptinClient from '../api'
 Vue.use(Vuex);
 
 let appConfig = LocalStorage.getItem("config");
-console.log(appConfig);
+console.log("Daptin client config endpoint", daptinClient.appConfig.endpoint);
 
 var defaultConfig = {
   user: null,
@@ -190,9 +190,7 @@ var defaultConfig = {
           }
         },
         "template": "home-view",
-        "actions": {
-
-        },
+        "actions": {},
       },
       'mail_form_template': {
         "item": "mail",
@@ -209,9 +207,7 @@ var defaultConfig = {
           }
         },
         "template": "another-form-view-1",
-        "actions": {
-
-        },
+        "actions": {},
       },
       'action_form_template': {
         "item": "action",
@@ -228,9 +224,7 @@ var defaultConfig = {
             key: "reference_id",
           }
         },
-        "actions": {
-
-        },
+        "actions": {},
       },
       'user_form_template': {
         "item": "user_account",
@@ -252,9 +246,7 @@ var defaultConfig = {
             },
           ]
         },
-        "actions": {
-
-        },
+        "actions": {},
       },
       'article_display_template': {
         'title': "Article",
@@ -420,6 +412,15 @@ var defaultConfig = {
 const token = LocalStorage.getItem("token");
 var state = JSON.parse(appConfig || JSON.stringify(defaultConfig));
 
+
+if (!daptinClient.appConfig.endpoint && state.appLayout.endpoint) {
+  console.log("setting daptin end point and refreshing ")
+  localStorage.setItem("DAPTIN_ENDPOINT", state.appLayout.endpoint);
+
+  setTimeout(function () {
+    window.location = window.location + "";
+  }, 300);
+}
 
 console.log("localhost state ", state);
 if (token) {
