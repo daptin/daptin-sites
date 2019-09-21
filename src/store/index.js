@@ -31,6 +31,7 @@ var defaultConfig = {
     endpoint: "http://localhost:6336",
     style: {
       background: "#ffffff",
+      logourl: ''
     },
     templates: [
       {
@@ -43,7 +44,7 @@ var defaultConfig = {
           "\n" +
           "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
           "      <template v-for=\"(row, i) in localData\">\n" +
-          "        <q-card class=\"my-card\" :key=\"row.key\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index': i, 'data': row})\">\n" +
+          "        <q-card class=\"my-card\" :key=\"row.key\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index': i, 'params': row})\">\n" +
           "\n" +
           "          <q-avatar color=\"grey\" text-color=\"white\">\n" +
           "            {{ row.avatar }}\n" +
@@ -60,7 +61,12 @@ var defaultConfig = {
           "        </q-card>\n" +
           "      </template>\n" +
           "    </div>\n" +
-          "  </q-page>"
+          "  </q-page>",
+        variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
+        events: [{
+          name: "ItemSingleClick",
+          type: "SingleRow"
+        }]
       },
       {
         name: "list-view-1",
@@ -72,7 +78,7 @@ var defaultConfig = {
           "\n" +
           "    <q-list style=\"background: white\">\n" +
           "      <template v-for=\"(row, index) in localData\">\n" +
-          "        <q-item :key=\"index\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index':index, 'data': row})\">\n" +
+          "        <q-item :key=\"index\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index':index, 'params': row})\">\n" +
           "\n" +
           "          <q-item-section avatar>\n" +
           "            <q-avatar color=\"grey\" text-color=\"white\">\n" +
@@ -94,6 +100,11 @@ var defaultConfig = {
           "    </q-list>\n" +
           "\n" +
           "  </q-page>",
+        variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
+        events: [{
+          name: "ItemSingleClick",
+          type: "SingleRow"
+        }]
       },
       {
         name: "another-form-view-1",
@@ -108,6 +119,10 @@ var defaultConfig = {
           "    </div>\n" +
           "  </q-page>",
         style: "",
+        variables: ["title"],
+        events: [{
+          name: "DeleteItem"
+        }]
       },
       {
         name: "home-view",
@@ -127,8 +142,16 @@ var defaultConfig = {
           "    </table>\n" +
           "    \n" +
           "</div>",
-        actions: [
-          'deleteThisAction'
+        variables: ["title", "reference_id"],
+        events: [
+          {
+            name: 'deleteThisAction',
+            type: "SingleRow"
+          },
+          {
+            name: 'test',
+            type: "SingleRow"
+          }
         ]
       }
     ],
@@ -166,7 +189,10 @@ var defaultConfig = {
             title: "action_name",
           }
         },
-        "template": "home-view"
+        "template": "home-view",
+        "actions": {
+
+        },
       },
       'mail_form_template': {
         "item": "mail",
@@ -182,7 +208,10 @@ var defaultConfig = {
             key: "reference_id"
           }
         },
-        "template": "another-form-view-1"
+        "template": "another-form-view-1",
+        "actions": {
+
+        },
       },
       'action_form_template': {
         "item": "action",
@@ -198,7 +227,10 @@ var defaultConfig = {
             avatar: 'label',
             key: "reference_id",
           }
-        }
+        },
+        "actions": {
+
+        },
       },
       'user_form_template': {
         "item": "user_account",
@@ -219,7 +251,10 @@ var defaultConfig = {
               run: "function dateParse(v){return new Date(Date.parse(v));};dateParse", on: "created_at"
             },
           ]
-        }
+        },
+        "actions": {
+
+        },
       },
       'article_display_template': {
         'title': "Article",

@@ -52,7 +52,7 @@
 
             <div>
               <label>Logo URL</label>
-              <input class="d-input" type="text">
+              <input class="d-input" v-model="appLayout.style.logourl" type="text">
             </div>
 
             <q-btn style="margin-top: 20px" color="blue" @click="selectedTab = 'screens'">Next</q-btn>
@@ -65,7 +65,7 @@
       </div>
 
 
-      <div style="height: 100vh" class="row" v-if="selectedTab == 'screens'">
+      <div style="height: 100vh" class="row" v-if="selectedTab == 'screens' || selectedTab == 'events'">
 
 
         <div class="col-1">
@@ -102,12 +102,14 @@
 
 
             <div class="col-8" style="background: #ebf1f4;padding-top: 150px; padding-left: 250px">
+              <b>{{screen.path}}</b>
+              <br>
               <iframe style="width: 100%; max-width: 320px; min-height: 500px; z-index: -1"
                       class="flower preview-frame"
                       :src="screen.path"></iframe>
             </div>
 
-            <div class="col-3">
+            <div class="col-3" v-if="selectedTab == 'screens'">
               <div class="row" style="padding: 20px">
                 <h2>Tab details</h2>
               </div>
@@ -135,7 +137,8 @@
 
 
                 <div class="col-12" style="margin: 10px;">
-                  <q-select filled map-options emit-value size="sm" v-model="screen.layout.item"
+                  <q-select @input="updateScreenTemplate(screen, i)" filled map-options emit-value size="sm"
+                            v-model="screen.layout.item"
                             option-value="table_name"
                             option-label="table_name" :options="models"/>
                 </div>
@@ -148,6 +151,36 @@
                             v-model="screen.layout.template"></q-select>
                 </div>
 
+                <div class="col-12" style="margin: 10px">
+
+
+                  <div class="col-3">
+                    <h3>
+                      Mapping
+                    </h3>
+                    <table style="width: 100%;" v-if="screen.table">
+                      <tbody>
+
+                      <tr v-for="key in templateMap[screen.layout.template].variables" :key="key">
+                        <td style="width: 40%">
+                          {{key}}
+                        </td>
+                        <td style="padding: 0">
+                          <v-select :reduce="col => col.ColumnName"
+                                    v-model="screen.layout.transform.item[key]" :options="screenColumns"
+                                    value="ColumnName" label="ColumnName"></v-select>
+                        </td>
+                        <td></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+                <div class="col-12" style="margin: 10px;">
+                  <q-btn color="primary" @click="save">Save</q-btn>
+                </div>
+
                 <!--<div class="col-12">-->
                 <!--<q-select borderless :options="Object.keys(appLayout.layoutConfiguration)"-->
                 <!--v-model="screen.layoutName"></q-select>-->
@@ -157,6 +190,77 @@
                 <!--<q-btn color="green" @click="saveTemplate(screen.template, i)" label="Update"></q-btn>-->
                 <!--<q-btn label="New layout" color="green" @click="newLayoutDialog = true"></q-btn>-->
                 <!--</div>-->
+              </div>
+
+            </div>
+
+            <div class="col-4" v-if="selectedTab == 'events'" style="overflow-y: scroll; height: 100vh">
+              <div class="row" style="padding: 20px">
+                <h2>Events</h2>
+              </div>
+              <div class="row" style="background: #fff2ef; border-bottom: 1px solid black; padding: 10px"
+                   :key="actionName"
+                   v-for="actionName in Object.keys(screen.layout.actions)">
+                <div class="col-12" style="margin: 10px">
+                  <h3>{{actionName}}</h3>
+                </div>
+
+                <div class="col-12" style="margin: 10px">
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'relocate'}"
+                         @click="updateEventType(actionName, 'relocate')">Relocate
+                  </q-btn>
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'get'}"
+                         @click="updateEventType(actionName, 'get')">Get
+                  </q-btn>
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'post'}"
+                         @click="updateEventType(actionName, 'post')">Post
+                  </q-btn>
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'delete'}"
+                         @click="updateEventType(actionName, 'delete')">Delete
+                  </q-btn>
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'update'}"
+                         @click="updateEventType(actionName, 'update')">Update
+                  </q-btn>
+                  <q-btn class="action-type-button"
+                         :class="{'selected-action-type-button': screen.layout.actions[actionName].type == 'action'}"
+                         @click="updateEventType(actionName, 'action')">Action
+                  </q-btn>
+
+                </div>
+
+                <div class="col-10" v-if="screen.layout.actions[actionName]">
+
+                  <v-select v-if="screen.layout.actions[actionName].type == 'relocate'" style="min-width: 200px"
+                            :options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"
+                            v-model="screen.layout.actions[actionName].params.path"></v-select>
+
+                  <v-select v-if="screen.layout.actions[actionName].type == 'action'"
+                            :options="serverActions" value="action_name" label="label"
+                            v-model="screen.layout.actions[actionName].params.action_name"
+                            :reduce="val => val.action_name"></v-select>
+
+                  <v-select v-if="['post', 'put', 'delete'].indexOf(screen.layout.actions[actionName].type) > -1"
+                            :options="models" value="table_name" label="table_name"
+                            v-model="screen.layout.actions[actionName].params.table_name"
+                            :reduce="val => val.table_name"></v-select>
+
+
+                </div>
+                <div class="col-2" v-if="screen.layout.actions[actionName].type == 'relocate'">
+                  <q-btn @click="setScreenByAction(actionName)" flat>
+                    <q-icon name="arrow_right"></q-icon>
+                  </q-btn>
+                </div>
+                <div class="col-12" style="margin: 10px;">
+                  <q-btn color="primary" @click="save">Save</q-btn>
+                </div>
+
+
               </div>
 
             </div>
@@ -319,11 +423,11 @@
         }
         this.templateMap = templateMap;
         for (var i = 0; i < this.screens.length; i++) {
-          this.screens[i].template = this.templateMap.get(this.screens[i].layout.template)
+          this.screens[i].template = this.templateMap[this.screens[i].layout.template]
         }
       },
       'appLayout.layoutConfiguration': function () {
-        console.log("layout config changed")
+        console.log("layout config changed");
         this.layouts = Object.keys(this.appLayout.layoutConfiguration)
       }
     },
@@ -346,6 +450,9 @@
             return e.id.indexOf(that.iconSearchText) > -1;
           }).slice((this.currentIconPage - 1) * this.iconsPerPage, this.currentIconPage * this.iconsPerPage)
         }
+      },
+      screenColumns: function () {
+        return this.screens[0].table.schema.Columns;
       }
     },
     name: "MyLayout",
@@ -382,6 +489,27 @@
       };
     },
     methods: {
+
+      editPath(path) {
+        this.screens = [];
+        this.pushScreens(path)
+      },
+
+      updateEventType(eventName, type) {
+        const screen = this.screens[0];
+        screen.layout.actions[eventName].type = type;
+        this.screens = [];
+        this.screens.push(screen)
+        // this.setTab(this.tab);
+      },
+      save() {
+        this.saveConfig();
+        this.reloadPreview();
+        const screen = this.screens[0];
+        this.screens = [];
+        this.screens.push(screen)
+        // this.setTab(this.tab);
+      },
       setIcon(icon) {
         console.log("set icon")
         this.screens[0].icon = icon.id
@@ -399,7 +527,8 @@
               list: "data",
               item: {}
             },
-            template: templateName
+            template: templateName,
+            actions: {}
           };
           this.layouts.push(name)
         }
@@ -435,15 +564,34 @@
           this.saveConfig()
         }
       },
-      updateScreenTemplate(screen, frameIndex) {
+      updateScreenTemplate(screen) {
         if (!screen.layout.template) {
           return
         }
-        screen.template = this.templateMap.get(screen.layout.template)
-        console.log("updated screen template ", screen)
-        this.saveConfig();
-        document.getElementsByClassName("preview-frame")[frameIndex].src = document.getElementsByClassName("preview-frame")[frameIndex].src + "";
+        screen.template = this.templateMap[screen.layout.template]
 
+        screen.layout.actions = {};
+
+        for (var event in screen.template.events) {
+          console.log("Create event in layout", screen.template.events[event].name)
+          if (!screen.layout.actions[screen.template.events[event].name]) {
+            screen.layout.actions[screen.template.events[event].name] = {
+              params: {},
+              type: 'relocate'
+            }
+          }
+        }
+        console.log("updated screen template ", screen)
+        // this.$forceUpdate();
+        this.saveConfig();
+        this.reloadPreview();
+        const screen1 = this.screens[0];
+        this.screens = [];
+        this.screens.push(screen1);
+        // this.setTab(this.tab)
+      },
+      reloadPreview() {
+        document.getElementsByClassName("preview-frame")[0].src = document.getElementsByClassName("preview-frame")[0].src + ""
       },
       addAction(actionName, type) {
         console.log('add action', actionName, type)
@@ -490,20 +638,22 @@
         var newLayoutName = newPath.split("/")[1];
         const newLayout = this.appLayout.layoutConfiguration[newLayoutName]
 
-        console.log("register action name", action.params.path, newPath, action);
+        console.log("register action name", action.params.path, newPath, action, newLayout);
         const currentScreen = this.screens.pop();
         this.screenHistoryStack.push(currentScreen);
+        this.screens = [];
         this.screens.push({
           parent: currentScreen.path,
           path: newPath,
           name: action.params.path,
           mappingName: newLayoutName,
-          template: this.templateMap.get(newLayout.template),
+          template: this.templateMap[newLayout.template],
           layout: newLayout,
           layoutName: newLayoutName,
           actionName: actionName,
           table: this.getWorldSchema(newLayout.item)
         });
+        this.selectedTab = 'screens';
 
       },
       addTab(tabName, newTabIcon, layout) {
@@ -515,12 +665,17 @@
           this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + "/template/{{reference_id}}"})
         }
       },
+      updateScreenEvent(screen) {
+        console.log("screen action", screen.layout.actions)
+        this.saveConfig();
+        this.reloadPreview();
+      },
       saveTemplate(template, frameIndex) {
         console.log("update template", arguments)
         this.setTemplate(template);
         this.saveConfig();
         template.showSave = false;
-        document.getElementsByClassName("preview-frame")[frameIndex].src = document.getElementsByClassName("preview-frame")[frameIndex].src + "";
+        this.reloadPreview();
       },
       updateTemplate(template) {
         console.log("update template", arguments)
@@ -579,7 +734,7 @@
           parent: "Top Level",
           path: path,
           name: path,
-          template: this.templateMap.get(layout.template),
+          template: this.templateMap[layout.template],
           layout: layout,
           layoutName: layoutName,
           actionName: "TabItemClick",
@@ -609,14 +764,16 @@
       }
 
       const templates = this.appLayout.templates;
-      const templateMap = new Map();
+      const templateMap = {};
       for (var i = 0; i < templates.length; i++) {
         var template = templates[i];
-        templateMap.set(template.name, template)
+        templateMap[template.name] = template
       }
       this.templateMap = templateMap;
       this.layouts = Object.keys(this.appLayout.layoutConfiguration)
       this.setTab('home');
+      // localStorage.setItem("config", JSON.stringify(this.appLayout))
+      this.saveConfig()
 
     },
   };
