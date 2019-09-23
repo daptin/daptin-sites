@@ -136,7 +136,7 @@ var defaultConfig = {
           "        <tr v-for=\"row in localData\" >\n" +
           "           <td> {{row.title}}</td>\n" +
           "           <td>\n" +
-          "               <q-btn @click=\"fireEvent({name: 'deleteThisAction', params: row.reference_id})\" label=\"Delete\"></q-btn>\n" +
+          "               <q-btn @click=\"fireEvent({name: 'deleteThisAction', params: row})\" label=\"Delete\"></q-btn>\n" +
           "           </td>\n" +
           "        </tr>\n" +
           "    </table>\n" +
@@ -358,6 +358,7 @@ var defaultConfig = {
             description: "from_address",
             avatar: 'label',
             created_at: "created_at",
+            reference_id: "reference_id",
             key: "reference_id"
           },
           operate: [

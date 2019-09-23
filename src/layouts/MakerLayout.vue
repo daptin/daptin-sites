@@ -70,11 +70,11 @@
 
         <div class="col-1">
           <div class="row" style="text-align: center; overflow-y: scroll; height: 100vh; overflow-x: hidden">
-            <div class="col-12" style="text-align: left; margin: 20px;">
+            <div class="col-12" style="text-align: left; padding-left: 20px; padding-top: 20px; height: 50px">
               <h3 style="color: black">Tabs</h3>
             </div>
 
-            <div class="col-12 tab-icon" style="padding-bottom: 20px;" @click="setTab('home')" :key="-1" clickable
+            <div class="col-12 tab-icon" style=" height: 110px" @click="setTab('home')" :key="-1" clickable
                  v-ripple>
               <q-icon style="width: 100%; font-size: 70px;" name="home" size="xl"/>
               <span style="font-weight: bolder">Home</span>
@@ -82,9 +82,11 @@
 
 
             <template v-for="(menuItem, index) in appLayout.tabs">
-              <div class="col-12 tab-icon" style="padding-top: 30px; padding-bottom: 20px;" @click="setTab(menuItem)"
+              <div class="col-12 tab-icon" style="padding-top: 20px; height: 150px" @click="setTab(menuItem)"
                    :key="index" clickable v-ripple>
-                <q-icon :name="menuItem.icon" size="xl" style="width: 100%; font-size: 70px;"/>
+                <q-icon @click.stop="deleteTab(menuItem)" name="delete" class="tab-delete" size="sm"
+                        style="width: 100%; font-size: 20px; left: 30px; opacity: 0.1"></q-icon>
+                <q-icon :name="menuItem.icon" size="xl" style="width: 100%; font-size: 70px;"></q-icon>
                 <span style="font-weight: bolder">{{ menuItem.label }}</span>
               </div>
             </template>
@@ -121,7 +123,7 @@
                 </div>
 
                 <div class="col-8" style="padding: 10px;">
-                  <q-input v-model="tab.label"></q-input>
+                  <q-input v-model="tab.label" @change="saveLayoutTitle(tab.label)"></q-input>
                 </div>
 
                 <div class="col-3" style="margin: 10px;">
@@ -154,7 +156,7 @@
                 <div class="col-12" style="margin: 10px">
 
 
-                  <div class="col-3">
+                  <div class="col-3" v-if="showMapping">
                     <h3>
                       Mapping
                     </h3>
@@ -233,7 +235,7 @@
 
                 </div>
 
-                <div class="col-10" v-if="screen.layout.actions[actionName]">
+                <div class="col-12" style="padding: 10px" v-if="screen.layout.actions[actionName]">
 
                   <v-select v-if="screen.layout.actions[actionName].type == 'relocate'" style="min-width: 200px"
                             :options="Object.keys(appLayout.layoutConfiguration).map(function(e){ return appLayout.layoutConfiguration[e].type == 'single' ? '/' + e + '/{{reference_id}}' : '/' + e })"
@@ -251,9 +253,13 @@
 
 
                 </div>
-                <div class="col-2" v-if="screen.layout.actions[actionName].type == 'relocate'">
-                  <q-btn @click="setScreenByAction(actionName)" flat>
-                    <q-icon name="arrow_right"></q-icon>
+                <div class="col-12" style="padding: 10px" v-if="screen.layout.actions[actionName].type == 'relocate'">
+                  <q-btn label="Edit this page" @click="setScreenByAction(actionName)">
+
+                  </q-btn>
+                  <q-btn label="New page" @click="newScreenNameDialog = true"
+                         v-if="screen.layout.actions[actionName].type == 'relocate'">
+
                   </q-btn>
                 </div>
                 <div class="col-12" style="margin: 10px;">
@@ -308,16 +314,16 @@
     <q-dialog v-model="newScreenNameDialog" persistent>
       <q-card style="min-width: 400px">
         <q-card-section>
-          <div class="text-h6">Tab name</div>
+          <div class="text-h6">Path</div>
         </q-card-section>
 
         <q-card-section>
-          <q-input dense v-model="newTabName" autofocus @keyup.enter="prompt = false"/>
+          <q-input dense v-model="newPathName" autofocus @keyup.enter="prompt = false"/>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup/>
-          <q-btn flat label="Add" @click="addTab(newTabName)" v-close-popup/>
+          <q-btn flat label="Add" @click="addNewPath(newPathName)" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -406,6 +412,21 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="deleteTabDialog" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Delete tab</div>
+        </q-card-section>
+        <q-card-section>
+          Are you sure, this cannot be undone
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Yes" @click="deleteTab(null, 'yes')" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-layout>
 
 
@@ -416,6 +437,29 @@
   import {mapGetters, mapActions} from 'vuex';
   import Mustache from 'mustache';
   import Vue from 'vue';
+
+
+  String.prototype.toUnderscore = function () {
+    return this.replace(/([A-Z])/g, function ($1) {
+      return "_" + $1.toLowerCase();
+    });
+  };
+
+
+  const toSnakeCase = function (string) {
+    var s;
+    s = string.replace(/[^\w\s]/g, "");
+    s = s.replace(/\s+/g, " ");
+    return s.toLowerCase().split(' ').join('_');
+  };
+
+
+  String.prototype.toDash = function () {
+    return this.replace(/([_])/g, function ($1) {
+      return "-";
+    });
+  };
+
 
   export default {
     watch: {
@@ -466,6 +510,7 @@
       return {
         selectedTab: 'appSetting',
         flowers: [],
+        tabToDelete: null,
         tab: null,
         left: this.$q.platform.is.desktop,
         screens: [],
@@ -473,9 +518,12 @@
         newScreenNameDialog: false,
         newActionNameDialog: false,
         iconSelection: false,
+        showMapping: true,
+        deleteTabDialog: false,
         newMappingDialog: false,
         newLayoutDialog: false,
         currentIconPage: 1,
+        newPathName: '',
         iconsPerPage: 12,
         newMappingName: '',
         newTabLayout: '',
@@ -495,6 +543,78 @@
       };
     },
     methods: {
+
+      saveLayoutTitle(title) {
+
+        console.log("save layout title", this.appLayout, title, this.screens[0].layoutName)
+        this.appLayout.layoutConfiguration[this.screens[0].layoutName].title = title
+
+        // const layoutNames = Object.keys(this.appLayout.layoutConfiguration);
+        // for (var i=0;i<layoutNames.length;i++) {
+        //   if (layoutNames[i] == this.screens[0].layoutName) {
+        //   }
+        // }
+
+      },
+
+      addNewPath(path) {
+
+        console.log("new path", path);
+        if (path[0] != '/') {
+          path = "/" + path
+        }
+        var layoutName = toSnakeCase(path.substring(1))
+        console.log("layout name", layoutName);
+        console.log("template name", layoutName.toDash())
+
+        this.appLayout.layoutConfiguration[layoutName] = {
+          'title': "Users",
+          'type': 'list',
+          "item": "user",
+          'transform': {
+            list: 'data',
+            item: {
+              title: "email",
+              key: "reference_id",
+              created_at: "created_at",
+              avatar: 'email',
+              description: 'email'
+            },
+            operate: [
+              {
+                run: "function dateParse(v){return new Date(Date.parse(v));};dateParse", on: "created_at"
+              },
+            ]
+          },
+          "actions": {},
+          template: "card-view-1"
+        }
+
+      },
+
+      deleteTab(tabInfo, confirm) {
+
+        if (confirm != 'yes') {
+
+          this.tabToDelete = tabInfo;
+          console.log("Delete tab", tabInfo);
+          this.deleteTabDialog = true;
+        } else {
+          var remove = -1
+          for (var i = 0; i < this.appLayout.tabs.length; i++) {
+            if (this.appLayout.tabs[i].path == this.tabToDelete.path && this.appLayout.tabs[i].label == this.tabToDelete.label) {
+              remove = i;
+              break;
+            }
+          }
+
+          if (remove != -1) {
+            this.appLayout.tabs.splice(remove, 1)
+          }
+        }
+
+
+      },
 
       editPath(path) {
         this.screens = [];
@@ -595,6 +715,13 @@
         this.screens = [];
         this.screens.push(screen1);
         // this.setTab(this.tab)
+
+        this.showMapping = false;
+        const that = this;
+        setTimeout(function () {
+          that.showMapping = true;
+          that.$forceUpdate();
+        }, 300)
       },
       reloadPreview() {
         document.getElementsByClassName("preview-frame")[0].src = document.getElementsByClassName("preview-frame")[0].src + ""
@@ -666,9 +793,9 @@
         this.newTabNameDialog = false;
         const layoutConfig = this.appLayout.layoutConfiguration[layout];
         if (layoutConfig.type == "list") {
-          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + "/template"})
+          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + ""})
         } else {
-          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + "/template/{{reference_id}}"})
+          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + "/{{reference_id}}"})
         }
       },
       updateScreenEvent(screen) {

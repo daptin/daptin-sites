@@ -87,7 +87,7 @@ export default {
 
     switch (actionConfig.type) {
       case "relocate":
-        const path = Mustache.render(actionConfig.params.path, action.data);
+        const path = Mustache.render(actionConfig.params.path, action.params);
         console.log("next path", path);
         commit("SET_PATH", path);
         break;
