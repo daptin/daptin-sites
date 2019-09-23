@@ -98,7 +98,7 @@ export default {
         })[0];
         console.log("execute server action", serverAction);
         const actionSchema = JSON.parse(serverAction.action_schema);
-        daptinClient.actionManager.doAction(actionSchema.OnType, actionName, action.data).then(function (res) {
+        daptinClient.actionManager.doAction(actionSchema.OnType, actionName, action.params).then(function (res) {
           console.log("action complete", res)
         }).catch(function (e) {
           console.log("action failed", e);
