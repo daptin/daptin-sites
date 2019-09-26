@@ -31,7 +31,9 @@ var defaultConfig = {
     endpoint: "http://localhost:6336",
     style: {
       background: "#ffffff",
-      logourl: ''
+      logourl: '',
+      primary: '#027be3',
+      secondary: '#26a69a'
     },
     templates: [
       {

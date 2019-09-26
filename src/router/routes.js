@@ -10,6 +10,22 @@ const routes = [
     component: () => import("layouts/MakerLayout.vue"),
   },
   {
+    path: "/experiment1",
+    component: () => import("pages/IconTabLayout.vue")
+  },
+  {
+    path: "/experiment2",
+    component: () => import("pages/IconLabelLayout.vue")
+  },
+  {
+    path: "/experiment3",
+    component: () => import("pages/IconTabLayoutSearch.vue")
+  }, 
+  {
+    path: "/experiment4",
+    component: () => import("pages/headerTabIcon.vue")
+  },
+  {
     path: "/",
     component: () => import("layouts/MyLayout.vue"),
     children: [

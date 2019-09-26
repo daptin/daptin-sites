@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" :style="{background: appLayout.style.background}">
+  <q-layout view="lHh Lpr lFf">
     <q-page-container>
 
       <router-view/>
@@ -9,7 +9,7 @@
       </q-page-sticky>
       -->
     </q-page-container>
-    <q-footer>
+    <q-footer color="primary">
       <q-tabs inline-label
               class="text-white">
         <q-tab v-for="tab in appLayout.tabs" :key="tab.name" @click="setTab(tab)" :name="tab.name" :icon="tab.icon"
