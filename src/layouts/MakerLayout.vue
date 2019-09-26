@@ -92,7 +92,7 @@
             </div>
             
 
-            <q-btn style="margin-top: 20px" color="primary" @click="selectedTab = 'screens'">Next</q-btn>
+            <q-btn style="margin-top: 20px" color="primary" @click="saveConfigAndNext()">Next</q-btn>
 
 
           </form>
@@ -594,6 +594,11 @@
 
       },
       //** Theming functions/
+
+      saveConfigAndNext(){
+        this.saveConfig();
+        this.selectedTab = 'screens'
+      },
 
       saveLayoutTitle(title) {
 

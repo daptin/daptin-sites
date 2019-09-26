@@ -6,6 +6,7 @@
 
 <script>
   import {mapGetters, mapActions, mapState} from 'vuex';
+  import {colors} from 'quasar';
   import Vue from 'vue';
 
 
@@ -24,6 +25,9 @@
     name: "App",
     mounted: function () {
       this.refreshModels();
+      colors.setBrand('primary', this.appLayout.style.primary);
+      colors.setBrand('secondary', this.appLayout.style.secondary);
+
       for (var i = 0; i < this.appLayout.templates.length; i++) {
         let template = this.appLayout.templates[i];
         if (!template.style) {
