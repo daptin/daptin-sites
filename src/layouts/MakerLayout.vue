@@ -92,10 +92,26 @@
             </div>
             
 
-            <q-btn style="margin-top: 20px" color="primary" @click="saveConfigAndNext()">Next</q-btn>
+            <q-btn style="margin-top: 20px" color="primary" @click="saveAndChangeTab('appSetting2')">Next</q-btn>
 
 
           </form>
+
+        </div>
+
+      </div>
+
+      <div class="row" v-if="selectedTab == 'appSetting2'">
+
+        <div class="col-12" style="padding: 10vh 25vw">
+
+        this is the second coming boi<br/>
+        <q-btn color="secondary" label="tabicon" />
+        <q-btn color="secondary" label="searchtabicon" />
+        <q-btn color="secondary" label="labelicon" />
+        <q-btn color="secondary" label="labeliconfoot" />
+        <br/>
+        <q-btn color="primary" @click="saveAndChangeTab('screens')" label="next" />
 
         </div>
 
@@ -595,9 +611,19 @@
       },
       //** Theming functions/
 
-      saveConfigAndNext(){
+      // saveConfigAndNext(){
+      //   this.saveConfig();
+      //   this.selectedTab = 'appSetting2'
+      
+      // },
+      // saveConfigAndNext2(){
+      //   this.saveConfig();
+      //   this.selectedTab = 'screens'
+      // },
+
+      saveAndChangeTab(tabname){
         this.saveConfig();
-        this.selectedTab = 'screens'
+        this.selectedTab = tabname
       },
 
       saveLayoutTitle(title) {
