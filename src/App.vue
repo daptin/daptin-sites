@@ -49,7 +49,7 @@
       }
     },
     mounted: function () {
-      this.refreshModels();
+      // this.refreshModels();
       colors.setBrand('primary', this.appLayout.style.primary);
       colors.setBrand('secondary', this.appLayout.style.secondary);
 
@@ -111,7 +111,7 @@
       }
     },
     methods: {
-      ...mapActions(['saveConfig', 'setPath', 'refreshModels']),
+      ...mapActions(['saveConfig', 'setPath']),
       make() {
         var x = document.createElement("a");
         x.href = "/make";

@@ -125,6 +125,21 @@ var defaultConfig = {
         events: [{
           name: "DeleteItem"
         }]
+      }, {
+        name: "json-view",
+        template: "<q-page>\n" +
+          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"localData && localData.title\">\n" +
+          "      <q-toolbar-title>{{localData.title}}</q-toolbar-title>\n" +
+          "    </q-toolbar>\n" +
+          "\n" +
+          "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
+          "\n" +
+          "      {{localData}}\n" +
+          "    </div>\n" +
+          "  </q-page>",
+        style: "",
+        variables: ["reference_id"],
+        events: []
       },
       {
         name: "home-view",
@@ -440,7 +455,7 @@ if (token) {
 
 
 export default function createStore() {
-  daptinClient.worldManager.loadModels();
+  // daptinClient.worldManager.loadModels();
   console.log("Store created");
   return new Vuex.Store({
     state: state,

@@ -211,6 +211,10 @@ export default {
       }
     })
   },
+  addLayout: ({commit, state}, params) => {
+    console.log("add tab", params);
+    state.appLayout.layoutConfiguration[params.name] = params.config;
+  },
   addNewTab: ({commit, state}, params) => {
     console.log("add tab", params);
     state.appLayout.tabs.push(params)
@@ -271,7 +275,7 @@ export default {
           })
         }
       } else {
-        daptinClient.worldManager.loadModels().then(function () {
+        daptinClient.worldManager.loadModel(state.currentLayout.item).then(function () {
           commit("SET_LOADED", true);
           console.log("loaded all worlds");
 

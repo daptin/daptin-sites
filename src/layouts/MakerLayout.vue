@@ -366,8 +366,6 @@
 
         <q-card-section>
           <q-input v-model="newTabName" placeholder="New Tab Label"></q-input>
-          <q-select use-input use-chips @new-value="newLayout" size="sm" v-model="newTabLayout" :options="layouts"
-                    label="Layout"/>
           <q-select v-model="newTabIcon" option-label="id" option-value="id" :options="icons" label="Icon">
           </q-select>
 
@@ -375,7 +373,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup/>
-          <q-btn flat label="Add" @click="addTab(newTabName, newTabIcon, newTabLayout)" v-close-popup/>
+          <q-btn flat label="Add" @click="addTab(newTabName, newTabIcon)" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -707,7 +705,7 @@
             columns.push({
               type: 'text',
               title: column.ColumnName,
-              width: 200,
+              width: 300,
             })
           }
           var widths = [];
@@ -763,7 +761,7 @@
           let spreadsheet = jexcel(that.$refs["dataViewDiv_" + tableName][0], {
             data: spreadSheetData,
             columns: columns,
-            defaultColWidth: 200,
+            defaultColWidth: 300,
             onchange: function (gridContainer, tdContainer, xCell, yCell, newValue, oldValue) {
               console.log("value change", arguments);
               var row = spreadsheet.getRowData(yCell);
@@ -1098,6 +1096,7 @@
         if (!screen.layout.template) {
           return
         }
+        console.log("update screen template", screen.layout.template)
         screen.template = this.templateMap[screen.layout.template]
 
         screen.layout.actions = {};
@@ -1193,13 +1192,37 @@
         this.selectedTab = 'screens';
 
       },
-      addTab(tabName, newTabIcon, layout) {
+      addTab(tabName, newTabIcon) {
         this.newTabNameDialog = false;
-        const layoutConfig = this.appLayout.layoutConfiguration[layout];
-        if (layoutConfig.type == "list") {
-          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + ""})
+
+        var newLayoutForTab = toSnakeCase(tabName);
+
+        var layoutConfig = {
+          "item": this.userModels[0].table_name,
+          "type": "list",
+          "title": tabName,
+          "transform": {
+            list: "data",
+            item: {
+              reference_id: "reference_id",
+            }
+          },
+          "template": "json-view",
+          "actions": {},
+        };
+        if (this.appLayout.layoutConfiguration[newLayoutForTab]) {
+          layoutConfig = this.appLayout.layoutConfiguration[newLayoutForTab];
         } else {
-          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + layout + "/{{reference_id}}"})
+          // this.appLayout.layoutConfiguration[newLayoutForTab] = layoutConfig;
+          this.addLayout({
+            name: newLayoutForTab,
+            config: layoutConfig
+          })
+        }
+        if (layoutConfig.type == "list") {
+          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + newLayoutForTab + ""})
+        } else {
+          this.addNewTab({'label': tabName, 'icon': newTabIcon.id, 'path': "/" + newLayoutForTab + "/{{reference_id}}"})
         }
       },
       updateScreenEvent(screen) {
@@ -1219,7 +1242,7 @@
         template.showSave = true;
       },
       openURL,
-      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions', 'invokeEvent', 'refreshModels']),
+      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addLayout', 'addNewTab', 'createTemplate', 'refreshActions', 'invokeEvent', 'refreshModels']),
       setTab(tab) {
         console.log("load page", tab);
         // this.setLayout(tab.layout);
@@ -1265,6 +1288,10 @@
 
         const layout = this.appLayout.layoutConfiguration[layoutName];
 
+        if (!layout) {
+          console.log("layout is not defined", layoutName)
+        }
+
         let worldSchema = this.getWorldSchema(layout.item);
         console.log("push layout actions", layout, worldSchema);
         this.screens.push({
@@ -1295,6 +1322,7 @@
       },
     },
     mounted() {
+      this.refreshModels();
       this.refreshActions();
       if (!this.user) {
         this.$router.push("/")
