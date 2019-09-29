@@ -221,6 +221,7 @@ export default {
   },
   refreshData: ({commit, state}, params) => {
 
+    console.log("refresh data ", state.currentLayout)
     if (!state.currentLayout) {
       return
     }
@@ -239,22 +240,28 @@ export default {
             params = {}
           }
           const finalParams = {...state.currentLayout.params, ...params};
-          daptinClient.jsonApi.findAll(state.currentLayout.item, finalParams).then(function (res) {
-            console.log("loaded data", res);
-            const data = res.data;
-            commit('SET_DATA', data);
+
+          daptinClient.worldManager.loadModel(state.currentLayout.item).then(function(){
+            daptinClient.jsonApi.findAll(state.currentLayout.item, finalParams).then(function (res) {
+              console.log("loaded data", res);
+              const data = res.data;
+              commit('SET_DATA', data);
 
 
-            if (state.currentLayout.type == "list") {
-              commit("SET_LOCAL_DATA", DataTransform({data: data}, state.currentLayout.transform).transform())
-            } else {
-              commit("SET_LOCAL_DATA", DataTransform({data: [data]}, state.currentLayout.transform).transform()[0])
-            }
+              if (state.currentLayout.type == "list") {
+                commit("SET_LOCAL_DATA", DataTransform({data: data}, state.currentLayout.transform).transform())
+              } else {
+                commit("SET_LOCAL_DATA", DataTransform({data: [data]}, state.currentLayout.transform).transform()[0])
+              }
 
 
-          }).catch(function (err) {
-            console.log("Failed to load data", err)
+            }).catch(function (err) {
+              console.log("Failed to load data", err)
+            })
+
           })
+
+
         } else {
           if (!params) {
             reject("no id provided");

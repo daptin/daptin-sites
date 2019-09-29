@@ -343,9 +343,12 @@
         </div>
 
 
-        <div class="col-12" style="height: 50px; position: absolute; bottom: 0">
+        <div class="col-1" style="height: 50px;">
+          <q-btn style="width: 80%;height: 80%;margin-left: 10px;margin-top: 5px;" @click.prevent="newTable()" label=""
+                 icon="add"></q-btn>
+        </div>
+        <div class="col-11" style="height: 50px;">
           <q-tabs align="left" v-model="editorTab">
-            <q-tab @click="newTable()" icon="add"></q-tab>
             <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
                    :label="table" :name="table">
             </q-tab>
@@ -426,6 +429,22 @@
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup/>
           <q-btn flat label="Add" @click="newLayout(newLayoutName)" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="newTableDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Table name</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input dense v-model="newTableName" autofocus @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Add" @click="newTable(newTableName)" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -642,13 +661,46 @@
         newActionType: '',
         templateMap: {},
         data: null,
+        newTableName: null,
+        newTableDialog: false,
         editorTab: null,
         screenHistoryStack: []
       };
     },
     methods: {
-      newTable() {
+      newTable(tableName) {
+        const that = this;
+        console.log("new table add", tableName)
+        if (!tableName) {
+          this.newTableDialog = true;
+        } else {
 
+
+          var schema = JSON.stringify({
+            Tables: [
+              {
+                TableName: tableName,
+                Columns: [],
+              }
+            ],
+          });
+
+
+          that.invokeEvent({
+            type: 'action',
+            params: {
+              action_name: 'upload_system_schema',
+              schema_file: [{
+                "name": "new_column.json",
+                "file": "data:application/json;base64," + btoa(schema),
+                "type": "application/json"
+              }],
+            }
+          }).then(function () {
+            that.refreshModels();
+          })
+
+        }
       },
       setGridData(tableName) {
 
@@ -710,6 +762,25 @@
           }
           var widths = [];
           var maxLength = [];
+
+          if (columns.length == 0) {
+            columns.push({
+              type: 'text',
+              title: 'A',
+              width: 300,
+            })
+            columns.push({
+              type: 'text',
+              title: 'B',
+              width: 300,
+            })
+            columns.push({
+              type: 'text',
+              title: 'C',
+              width: 300,
+            })
+          }
+
           for (var i = 0; i < rows.length; i++) {
             var row = [];
             for (var j in headers) {
@@ -854,9 +925,11 @@
               console.log("Header change", arguments);
 
               var found = false;
+              var foundIndex = -1;
               for (var i = 0; i < columns.length; i++) {
                 if (columns[i].Name == oldColumnName) {
                   found = true;
+                  foundIndex = i;
                   break;
                 }
               }
@@ -877,6 +950,8 @@
                     new_column_name: newColumnName,
                     world_id: model.id
                   }
+                }).then(function(){
+                  that.columns
                 })
 
 
