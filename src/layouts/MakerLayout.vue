@@ -326,13 +326,9 @@
         </div>
       </div>
       <div class="row" style="height: 100vh; overflow-x: scroll" v-if="selectedTab == 'data'">
+
+
         <div class="col-12">
-          <q-tabs align="left" v-model="editorTab">
-            <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
-                   :label="table" :name="table">
-            </q-tab>
-            <q-tab icon="add"></q-tab>
-          </q-tabs>
           <q-tab-panels
             v-model="editorTab"
             transition-prev="jump-up"
@@ -344,6 +340,16 @@
               </div>
             </q-tab-panel>
           </q-tab-panels>
+        </div>
+
+
+        <div class="col-12" style="height: 50px; position: absolute; bottom: 0">
+          <q-tabs align="left" v-model="editorTab">
+            <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
+                   :label="table" :name="table">
+            </q-tab>
+            <q-tab icon="add"></q-tab>
+          </q-tabs>
         </div>
 
 
@@ -554,9 +560,10 @@
 
           if (!that.editorTab) {
             that.editorTab = that.userModels[0].table_name;
+          } else {
+            that.setGridData(that.editorTab)
           }
 
-          // that.setGridData(that.editorTab)
         }
 
       },
@@ -663,6 +670,7 @@
 
           var headers = [];
           var columns = [];
+          var ids = [];
           var spreadSheetData = [];
           var rows = data;
           console.log("loaded data", data, spreadSheetData);
@@ -672,6 +680,11 @@
           // let keys = Object.keys(data[0]);
           for (var columnId in schemaColumns) {
             var column = schemaColumns[columnId];
+
+            if (!column.Name) {
+              console.log("Column has no name", column);
+            }
+
             if (column.Name.endsWith("_id")) {
               continue
             }
@@ -712,11 +725,19 @@
               }
               j += 1;
             }
-            spreadSheetData.push(row)
+            spreadSheetData.push(row);
+            ids.push(rows[i].reference_id)
           }
 
+          var newRow = [];
+
+          for (var c in columns) {
+            newRow.push('');
+          }
+          console.log("ids", ids)
+
           for (var i = 0; i < 10; i++) {
-            spreadSheetData.push({})
+            spreadSheetData.push(newRow)
           }
 
           for (var i = 0; i < maxLength.length; i++) {
@@ -731,10 +752,82 @@
           console.log("immediate load data", widths)
 
           console.log("div name", "dataViewDiv_" + tableName, that.$refs["dataViewDiv_" + tableName])
+
+
+          document.getElementById('dataGrid_' + tableName).innerHTML = '';
+
           let spreadsheet = jexcel(that.$refs["dataViewDiv_" + tableName][0], {
             data: spreadSheetData,
             columns: columns,
+            defaultColWidth: 200,
+            onchange: function (gridContainer, tdContainer, xCell, yCell, newValue, oldValue) {
+              console.log("value change", arguments);
+              var row = spreadsheet.getRowData(yCell);
+              console.log("row", row);
+              var obj = {};
+              if (yCell > data.length - 1) {
+                console.log("new row");
+
+                var newRow = {};
+                var newGridRow = [];
+
+                for (var i=0;i<columns.length;i++) {
+                  var colName = columns[i].title
+                  var val = row[i];
+                  console.log("col ", colName, val);
+                  if (val && val.length > 0) {
+                    newRow[colName] = val
+                  }
+                  newGridRow.push(val)
+                }
+                newRow["table_name"] = tableName;
+
+                that.invokeEvent({
+                    type: "post",
+                    params: newRow
+                  }
+                ).then(function (response) {
+                  console.log("create response", response);
+                  // data.push(response.data);
+                  that.setGridData(tableName);
+                  // if (newValue != response.data[updatedColumn]) {
+                  //   spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
+                  // }
+                });
+
+
+              } else {
+                var existingRow = data[yCell];
+                var updatedColumn = columns[xCell].title;
+                console.log("update row", updatedColumn, existingRow);
+                existingRow[updatedColumn] = newValue;
+                console.log("update row", existingRow);
+                var attrs = {};
+                attrs[updatedColumn] = newValue;
+                attrs["reference_id"] = existingRow.id
+                attrs["id"] = existingRow.id
+                attrs["table_name"] = tableName;
+
+                that.invokeEvent({
+                    type: "put",
+                    params: attrs
+                  }
+                ).then(function (response) {
+                  console.log("update response", response);
+                  if (newValue != response.data[updatedColumn]) {
+                    spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
+                  }
+                });
+              }
+            },
+            oninsertcolumn: function () {
+              console.log("insert column", arguments)
+            }
           });
+
+          spreadsheet.onchange = function () {
+            console.log("grid value changed", arguments)
+          }
 
         }, function (err) {
           console.log("Get data failed", err, model)
@@ -1031,7 +1124,7 @@
         template.showSave = true;
       },
       openURL,
-      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions']),
+      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions', 'invokeEvent']),
       setTab(tab) {
         console.log("load page", tab);
         // this.setLayout(tab.layout);
