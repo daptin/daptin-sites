@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app" v-touch-hold:5000.mouse="setEndpoint">
+  <div id="q-app" v-touch-hold:3500.mouse="setEndpoint">
     <router-view/>
 
     <q-dialog v-model="newEndpointDialog" persistent>
