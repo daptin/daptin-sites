@@ -345,7 +345,7 @@
 
         <div class="col-12" style="height: 50px; position: absolute; bottom: 0">
           <q-tabs align="left" v-model="editorTab">
-            <q-tab icon="add"></q-tab>
+            <q-tab @click="newTable()" icon="add"></q-tab>
             <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
                    :label="table" :name="table">
             </q-tab>
@@ -649,6 +649,9 @@
       };
     },
     methods: {
+      newTable() {
+
+      },
       setGridData(tableName) {
 
 
@@ -841,7 +844,9 @@
                 }
               }).then(function () {
                 columns.splice(index, 1);
-                that.editorTab(tableName);
+                that.refreshModels().then(function () {
+                  that.setGridData(tableName);
+                });
               });
 
               return true;
@@ -856,7 +861,6 @@
                   found = true;
                   break;
                 }
-
               }
 
               if (found) {
@@ -1215,7 +1219,7 @@
         template.showSave = true;
       },
       openURL,
-      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions', 'invokeEvent']),
+      ...mapActions(['setLayout', 'getData', 'saveConfig', 'setTemplate', 'addNewTab', 'createTemplate', 'refreshActions', 'invokeEvent', 'refreshModels']),
       setTab(tab) {
         console.log("load page", tab);
         // this.setLayout(tab.layout);
