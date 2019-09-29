@@ -420,6 +420,8 @@ var defaultConfig = {
 const token = LocalStorage.getItem("token");
 var state = JSON.parse(appConfig || JSON.stringify(defaultConfig));
 
+delete state.user;
+
 
 if (!daptinClient.appConfig.endpoint && state.appLayout.endpoint) {
   console.log("setting daptin end point and refreshing ")

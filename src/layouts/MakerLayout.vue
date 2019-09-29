@@ -345,10 +345,10 @@
 
         <div class="col-12" style="height: 50px; position: absolute; bottom: 0">
           <q-tabs align="left" v-model="editorTab">
+            <q-tab icon="add"></q-tab>
             <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
                    :label="table" :name="table">
             </q-tab>
-            <q-tab icon="add"></q-tab>
           </q-tabs>
         </div>
 
@@ -674,35 +674,36 @@
           var spreadSheetData = [];
           var rows = data;
           console.log("loaded data", data, spreadSheetData);
-          const skipColumns = ["id", "created_at", "updated_at", "version", "permission"];
+          const skipColumns = ["id", "created_at", "updated_at", "version", "permission", "reference_id", "user_account_id"];
 
 
           // let keys = Object.keys(data[0]);
           for (var columnId in schemaColumns) {
             var column = schemaColumns[columnId];
+            console.log("column ", column)
 
             if (!column.Name) {
               console.log("Column has no name", column);
             }
 
-            if (column.Name.endsWith("_id")) {
-              continue
-            }
+            // if (column.Name.endsWith("reference_id")) {
+            //   continue
+            // }
             if (column.Name.substring(0, 2) == "__") {
               continue
             }
 
-            if (column.IsForeignKey) {
-              continue;
-            }
+            // if (column.IsForeignKey) {
+            //   continue;
+            // }
 
-            if (skipColumns.indexOf(column.Name) > -1) {
+            if (skipColumns.indexOf(column.ColumnName) > -1) {
               continue;
             }
-            headers.push(column.Name);
+            headers.push(column.ColumnName);
             columns.push({
               type: 'text',
-              title: column.Name,
+              title: column.ColumnName,
               width: 200,
             })
           }
@@ -768,10 +769,10 @@
               if (yCell > data.length - 1) {
                 console.log("new row");
 
-                var newRow = {};
-                var newGridRow = [];
+                const newRow = {};
+                const newGridRow = [];
 
-                for (var i=0;i<columns.length;i++) {
+                for (let i = 0; i < columns.length; i++) {
                   var colName = columns[i].title
                   var val = row[i];
                   console.log("col ", colName, val);
@@ -822,6 +823,90 @@
             },
             oninsertcolumn: function () {
               console.log("insert column", arguments)
+            },
+            ondeletecolumn: function(container, index, colName) {
+              console.log("delete column", arguments);
+              var colToDelete = columns[index - 1];
+              var model = that.models.filter(function (e) {
+                return e.table_name == tableName
+              })[0];
+
+              that.invokeEvent({
+                type: 'action',
+                params: {
+                  action_name: "remove_column",
+                  column_name: colToDelete.title,
+                  world_id: model.id
+                }
+              })
+
+            },
+            onchangeheader: function (container, colIndex, oldColumnName, newColumnName) {
+              console.log("Header change", arguments);
+
+              var found = false;
+              for (var i = 0; i < columns.length; i++) {
+                if (columns[i].Name == oldColumnName) {
+                  found = true;
+                  break;
+                }
+
+              }
+
+              if (found) {
+                // rename column
+
+                var model = that.models.filter(function (e) {
+                  return e.table_name == tableName
+                })[0];
+                console.log("table model", model)
+
+                that.invokeEvent({
+                  type: 'action',
+                  params: {
+                    action_name: "rename_column",
+                    column_name: oldColumnName,
+                    new_column_name: newColumnName,
+                    world_id: model.id
+                  }
+                })
+
+
+              } else {
+                // add new column to this table
+
+                var schema = JSON.stringify({
+                  Tables: [
+                    {
+                      TableName: tableName,
+                      Columns: [
+                        {
+                          Name: newColumnName,
+                          ColumnName: newColumnName,
+                          ColumnType: 'label',
+                          DataType: 'varchar(50)'
+                        }
+                      ],
+                    }
+                  ],
+                });
+
+
+                that.invokeEvent({
+                  type: 'action',
+                  params: {
+                    action_name: 'upload_system_schema',
+                    schema_file: [{
+                      "name": "new_column.json",
+                      "file": "data:application/json;base64," + btoa(schema),
+                      "type": "application/json"
+                    }],
+                  }
+                })
+
+              }
+
+
             }
           });
 

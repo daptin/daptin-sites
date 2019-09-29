@@ -54,7 +54,7 @@ export default {
       if (e.is_hidden || e.is_join_table) {
         return false;
       }
-      var systemTables = ['world', 'usergroup', 'action', 'integration', "mail_server", "mail_account", "mail"];
+      var systemTables = ['world', 'usergroup', 'action', 'integration', "mail_server", "mail_account", "mail", "mail_box", "user_account", "user_otp_account"];
 
       if (systemTables.indexOf(e.table_name) > -1) {
         return false;

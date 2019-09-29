@@ -1,6 +1,26 @@
 <template>
-  <div id="q-app" v-touch-hold.mouse="setEndpoint">
+  <div id="q-app" v-touch-hold:5000.mouse="setEndpoint">
     <router-view/>
+
+    <q-dialog v-model="newEndpointDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">New endpoint</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input dense v-model="appLayout.endpoint" autofocus @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Make" @click="make()" v-close-popup/>
+          <q-btn flat label="Update" @click="updateEndpoint()" v-close-popup/>
+          <q-btn flat label="Cancel" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
   </div>
 </template>
 
@@ -23,6 +43,11 @@
 
     },
     name: "App",
+    data: function () {
+      return {
+        newEndpointDialog: false,
+      }
+    },
     mounted: function () {
       this.refreshModels();
       colors.setBrand('primary', this.appLayout.style.primary);
@@ -87,12 +112,22 @@
     },
     methods: {
       ...mapActions(['saveConfig', 'setPath', 'refreshModels']),
+      make() {
+        var x = document.createElement("a");
+        x.href = "/make";
+        document.getElementsByTagName("body")[0].appendChild(x);
+        x.click()
+        // window.location = window.location + "/make";
+      },
+      updateEndpoint() {
+        console.log("update endpoint", this.appLayout.endpoint)
+        localStorage.setItem("DAPTIN_ENDPOINT", this.appLayout.endpoint);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        window.location = window.location + "";
+      },
       setEndpoint() {
-        var newEndpoint = window.prompt("Set Endpoint", localStorage.getItem("DAPTIN_ENDPOINT") || "");
-        if (newEndpoint) {
-          localStorage.setItem("DAPTIN_ENDPOINT", newEndpoint);
-          window.location = window.location + "";
-        }
+        this.newEndpointDialog = true;
       },
     },
     watch: {
