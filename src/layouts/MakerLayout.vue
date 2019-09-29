@@ -21,6 +21,10 @@
                 :class="{'selected-maker-tab': selectedTab == 'events'}">
           <q-item-section>Events</q-item-section>
         </q-item>
+        <q-item clickable @click.native="selectedTab = 'data'"
+                :class="{'selected-maker-tab': selectedTab == 'data'}">
+          <q-item-section>Data</q-item-section>
+        </q-item>
         <q-item clickable @click.native="selectedTab = 'publish'"
                 :class="{'selected-maker-tab': selectedTab == 'publish'}">
           <q-item-section>Publish</q-item-section>
@@ -56,41 +60,41 @@
             </div>
 
             <div class="q-pa-md">
-            <q-badge color="primary" text-color="white" class="q-mb-sm">
-            Primary Color: {{appLayout.style.primary}}
-            </q-badge>
+              <q-badge color="primary" text-color="white" class="q-mb-sm">
+                Primary Color: {{appLayout.style.primary}}
+              </q-badge>
 
-            <q-color
-              @change="setPrimary()"
-               v-model="appLayout.style.primary"
-               no-header
-               no-footer
-               default-view="palette"
-               :palette="['#D9B801', '#d66c00', '#26a69a', '#027be3', '#00a300', '#E8045A',
+              <q-color
+                @change="setPrimary()"
+                v-model="appLayout.style.primary"
+                no-header
+                no-footer
+                default-view="palette"
+                :palette="['#D9B801', '#d66c00', '#26a69a', '#027be3', '#00a300', '#E8045A',
                 '#B2028A', '#005c2e', '#333333', '#2A0449']"
-               class="my-picker"
-             />
+                class="my-picker"
+              />
             </div>
 
             <div class="q-pa-md">
-            <q-badge color="secondary" text-color="white" class="q-mb-sm">
-            Secondary Color: {{appLayout.style.secondary}}
-            </q-badge>
-          
+              <q-badge color="secondary" text-color="white" class="q-mb-sm">
+                Secondary Color: {{appLayout.style.secondary}}
+              </q-badge>
 
-            <q-color
-               @change="setSecondary()"
-               v-model="appLayout.style.secondary"
-               no-header
-               no-footer
-               default-view="palette"
-               :palette="['#D9B801', '#d66c00', '#26a69a', '#027be3', '#00a300', '#E8045A',
+
+              <q-color
+                @change="setSecondary()"
+                v-model="appLayout.style.secondary"
+                no-header
+                no-footer
+                default-view="palette"
+                :palette="['#D9B801', '#d66c00', '#26a69a', '#027be3', '#00a300', '#E8045A',
                 '#B2028A', '#005c2e', '#333333', '#2A0449']"
-               class="my-picker"
-             />
-             
+                class="my-picker"
+              />
+
             </div>
-            
+
 
             <q-btn style="margin-top: 20px" color="primary" @click="saveConfigAndNext()">Next</q-btn>
 
@@ -136,19 +140,19 @@
 
         <div class="col-11" v-for="(screen, i) in screens" :key="i">
 
-
           <div style=" height: 100%" class="row">
 
 
             <div class="col-8" style="background: #ebf1f4;padding-top: 150px; padding-left: 250px">
-              <b>{{screen.path}}</b>
+
               <br>
               <iframe style="width: 100%; max-width: 320px; min-height: 500px; z-index: -1"
                       class="flower preview-frame"
                       :src="screen.path"></iframe>
             </div>
 
-            <div class="col-3" v-if="selectedTab == 'screens'">
+            <div class="col-4" v-if="selectedTab == 'screens'">
+              <q-bar>{{screen.path}}</q-bar>
               <div class="row" style="padding: 20px">
                 <h2>Tab details</h2>
               </div>
@@ -321,6 +325,29 @@
           <h1>Publish</h1>
         </div>
       </div>
+      <div class="row" style="height: 100vh; overflow-x: scroll" v-if="selectedTab == 'data'">
+        <div class="col-12">
+          <q-tabs align="left" v-model="editorTab">
+            <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
+                   :label="table" :name="table">
+            </q-tab>
+            <q-tab icon="add"></q-tab>
+          </q-tabs>
+          <q-tab-panels
+            v-model="editorTab"
+            transition-prev="jump-up"
+            transition-next="jump-up">
+            <q-tab-panel :key="table" v-for="table in userModels.map(function(e){return e.table_name})" :name="table"
+                         :label="table">
+              <div class="row" style="height: 90vh">
+                <div class="col-12" :id="'dataGrid_' + table" :ref="'dataViewDiv_' + table"></div>
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
+        </div>
+
+
+      </div>
 
 
     </q-page-container>
@@ -468,13 +495,26 @@
 
 
 </template>
+<style>
+  .q-tab-panel {
+    padding: 1px !important;
+  }
 
+  .highlight {
+    color: black;
+  }
+</style>
 <script>
+
+
   import {openURL} from "quasar";
   import {mapGetters, mapActions} from 'vuex';
   import Mustache from 'mustache';
   import Vue from 'vue';
-  import { colors } from 'quasar'
+  import {colors} from 'quasar'
+  import jexcel from 'jexcel';
+
+  require('jexcel/dist/jexcel.min.css')
 
 
   String.prototype.toUnderscore = function () {
@@ -501,6 +541,25 @@
 
   export default {
     watch: {
+      'editorTab': function (newTableName) {
+        const that = this;
+        that.setGridData(that.editorTab);
+
+      },
+      'selectedTab': function (newTab) {
+        console.log("New tab is", newTab);
+        const that = this;
+
+        if (newTab == "data") {
+
+          if (!that.editorTab) {
+            that.editorTab = that.userModels[0].table_name;
+          }
+
+          // that.setGridData(that.editorTab)
+        }
+
+      },
       'appLayout.templates': function () {
         console.log("templates changed")
         const templates = this.appLayout.templates;
@@ -526,6 +585,7 @@
         'layout',
         'models',
         'icons',
+        'userModels',
         'serverActions'
       ]),
       currentPageIcons: function () {
@@ -577,17 +637,117 @@
         newActionType: '',
         templateMap: {},
         data: null,
+        editorTab: null,
         screenHistoryStack: []
       };
     },
     methods: {
-      //Theming functions ** 
-      setPrimary(){
+      setGridData(tableName) {
+
+
+        const that = this;
+
+        const dataModel = that.userModels.filter(function (e) {
+          return e.table_name == tableName
+        })[0]
+
+        that.getData({
+          layout: {
+            type: "list",
+            item: tableName
+          }
+        }).then(function (data) {
+          console.log("Table data", dataModel, tableName, data);
+          const schema = JSON.parse(dataModel.world_schema_json);
+          const schemaColumns = schema.Columns;
+
+          var headers = [];
+          var columns = [];
+          var spreadSheetData = [];
+          var rows = data;
+          console.log("loaded data", data, spreadSheetData);
+          const skipColumns = ["id", "created_at", "updated_at", "version", "permission"];
+
+
+          // let keys = Object.keys(data[0]);
+          for (var columnId in schemaColumns) {
+            var column = schemaColumns[columnId];
+            if (column.Name.endsWith("_id")) {
+              continue
+            }
+            if (column.Name.substring(0, 2) == "__") {
+              continue
+            }
+
+            if (column.IsForeignKey) {
+              continue;
+            }
+
+            if (skipColumns.indexOf(column.Name) > -1) {
+              continue;
+            }
+            headers.push(column.Name);
+            columns.push({
+              type: 'text',
+              title: column.Name,
+              width: 200,
+            })
+          }
+          var widths = [];
+          var maxLength = [];
+          for (var i = 0; i < rows.length; i++) {
+            var row = [];
+            for (var j in headers) {
+              var column = headers[j];
+              // console.log("spps s", i, column, column, rows[i])
+              if (rows[i][column] instanceof Array) {
+                row.push(rows[i][column].join(","))
+              } else if (rows[i][column] instanceof Object) {
+                row.push(JSON.stringify(rows[i][column]))
+              } else {
+                row.push(rows[i][column])
+              }
+              if (!maxLength[j] || maxLength[j] < new String(row[j]).length) {
+                maxLength[j] = row[j] ? new String(row[j]).length : 0;
+              }
+              j += 1;
+            }
+            spreadSheetData.push(row)
+          }
+
+          for (var i = 0; i < 10; i++) {
+            spreadSheetData.push({})
+          }
+
+          for (var i = 0; i < maxLength.length; i++) {
+            if (maxLength[i] > 1000) {
+              maxLength[i] = 1000;
+            }
+            widths[i] = maxLength[i] * 5 + 100;
+            columns[i].width = widths[i];
+          }
+
+          console.log('grid data', tableName, spreadSheetData)
+          console.log("immediate load data", widths)
+
+          console.log("div name", "dataViewDiv_" + tableName, that.$refs["dataViewDiv_" + tableName])
+          let spreadsheet = jexcel(that.$refs["dataViewDiv_" + tableName][0], {
+            data: spreadSheetData,
+            columns: columns,
+          });
+
+        }, function (err) {
+          console.log("Get data failed", err, model)
+        })
+
+      },
+      //Theming functions **
+      setPrimary() {
         console.log(this.appLayout.style.primary);
         colors.setBrand('primary', this.appLayout.style.primary);
         parent.parent.document.documentElement.style.setProperty('--q-color-primary', this.appLayout.style.primary);
       },
-      setSecondary(){
+      setSecondary() {
         console.log(this.appLayout.style.secondary);
         colors.setBrand('secondary', this.appLayout.style.secondary);
         parent.parent.document.documentElement.style.setProperty('--q-color-secondary', this.appLayout.style.secondary);
@@ -595,7 +755,7 @@
       },
       //** Theming functions/
 
-      saveConfigAndNext(){
+      saveConfigAndNext() {
         this.saveConfig();
         this.selectedTab = 'screens'
       },

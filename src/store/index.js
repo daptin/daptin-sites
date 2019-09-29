@@ -133,6 +133,7 @@ var defaultConfig = {
           "    \n" +
           "    <q-input label='Mobile number' v-model=\"vars.mobile_number\"></q-input>\n" +
           "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
+          "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'untest', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
           "    \n" +
           "    <table>\n" +
           "        <tr v-for=\"row in localData\" >\n" +
@@ -152,6 +153,10 @@ var defaultConfig = {
           },
           {
             name: 'test',
+            type: "SingleRow"
+          },
+          {
+            name: 'untest',
             type: "SingleRow"
           }
         ]
