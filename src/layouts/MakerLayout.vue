@@ -824,9 +824,10 @@
             oninsertcolumn: function () {
               console.log("insert column", arguments)
             },
-            ondeletecolumn: function(container, index, colName) {
-              console.log("delete column", arguments);
-              var colToDelete = columns[index - 1];
+            onbeforedeletecolumn: function (container, index, colName) {
+              console.log("columns", JSON.stringify(columns, null, 4))
+              var colToDelete = columns[index].title;
+              console.log("delete column", index, colToDelete);
               var model = that.models.filter(function (e) {
                 return e.table_name == tableName
               })[0];
@@ -835,10 +836,15 @@
                 type: 'action',
                 params: {
                   action_name: "remove_column",
-                  column_name: colToDelete.title,
+                  column_name: colToDelete,
                   world_id: model.id
                 }
-              })
+              }).then(function () {
+                columns.splice(index, 1);
+                that.editorTab(tableName);
+              });
+
+              return true;
 
             },
             onchangeheader: function (container, colIndex, oldColumnName, newColumnName) {
