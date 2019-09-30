@@ -33,7 +33,10 @@ var defaultConfig = {
       background: "#ffffff",
       logourl: '',
       primary: '#027be3',
-      secondary: '#26a69a'
+      secondary: '#26a69a',
+      navbarBackgroundColor: '#122211',
+      navbarTextColor: '#fff',
+      navbarIconColor: '#729'
     },
     templates: [
       {

@@ -9,9 +9,8 @@
       </q-page-sticky>
       -->
     </q-page-container>
-    <q-footer color="primary">
-      <q-tabs inline-label
-              class="text-white">
+    <q-footer :color="appLayout.style.navbarBackgroundColor">
+      <q-tabs inline-label :style="{'color': appLayout.style.navbarTextColor}">
         <q-tab v-for="tab in appLayout.tabs" :key="tab.name" @click="setTab(tab)" :name="tab.name" :icon="tab.icon"
                :label="tab.label"/>
       </q-tabs>

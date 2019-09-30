@@ -123,10 +123,12 @@
 
 
             <template v-for="(menuItem, index) in appLayout.tabs">
-              <div class="col-12 tab-icon" style="padding-top: 20px; height: 150px" @click="setTab(menuItem)"
+              <div class="col-12 tab-icon" style="padding-top: 10px; height: 150px" @click="setTab(menuItem)"
                    :key="index" clickable v-ripple>
+                <q-icon @click.stop="setIcon(null, menuItem)" name="build" class="tab-delete" size="sm"
+                        style="width: 100%; font-size: 20px; left: 40px; opacity: 0.1; float: left"></q-icon>
                 <q-icon @click.stop="deleteTab(menuItem)" name="delete" class="tab-delete" size="sm"
-                        style="width: 100%; font-size: 20px; left: 30px; opacity: 0.1"></q-icon>
+                        style="width: 100%; font-size: 20px; left: 40px; opacity: 0.1; float: left"></q-icon>
                 <q-icon :name="menuItem.icon" size="xl" style="width: 100%; font-size: 70px;"></q-icon>
                 <span style="font-weight: bolder">{{ menuItem.label }}</span>
               </div>
@@ -160,38 +162,35 @@
 
 
                 <div class="col-12" style="padding: 10px;">
-                  Tab Name
+                  Tab title
                 </div>
 
                 <div class="col-8" style="padding: 10px;">
                   <q-input v-model="tab.label" @change="saveLayoutTitle(tab.label)"></q-input>
                 </div>
 
-                <div class="col-3" style="margin: 10px;">
-                  <q-icon style="font-size: 4rem;" :name="tab.icon" @click.native="iconSelection = true"/>
-                </div>
-
-
-                <div class="col-12" style="margin: 10px;">
-                  <q-select filled @input="updateScreenType(screen)" size="sm"
+                <div class="col-10" style="margin: 10px;">
+                  Data single or list:
+                  <v-select @input="updateScreenType(screen)"
                             v-model="screen.layout.type"
                             :options="['list', 'single']"/>
                 </div>
 
 
-                <div class="col-12" style="margin: 10px;">
-                  <q-select @input="updateScreenTemplate(screen, i)" filled map-options emit-value size="sm"
+                <div class="col-10" style="margin: 10px;">
+                  Table name
+                  <v-select @input="updateScreenLayoutItem(screen, i)"
                             v-model="screen.layout.item"
-                            option-value="table_name"
-                            option-label="table_name" :options="models"/>
+                            value="table_name" :reduce="model => model.table_name"
+                            label="table_name" :options="models"/>
                 </div>
-                <div class="col-12" style="margin: 10px;">
-
-                  <q-select filled
-                            @input="updateScreenTemplate(screen, i)" map-options emit-value
-                            :options="appLayout.templates" option-label="name"
-                            option-value="name"
-                            v-model="screen.layout.template"></q-select>
+                <div class="col-10" style="margin: 10px;">
+                  View template
+                  <v-select
+                    @input="updateScreenTemplate(screen, i)" :reduce="item => item.name"
+                    :options="appLayout.templates" label="name"
+                    value="name"
+                    v-model="screen.layout.template"></v-select>
                 </div>
 
                 <div class="col-12" style="margin: 10px">
@@ -204,13 +203,13 @@
                     <table style="width: 100%;" v-if="screen.table && templateMap[screen.layout.template]">
                       <tbody>
 
-                      <tr v-for="key in templateMap[screen.layout.template].variables" :key="key">
+                      <tr v-for="key in mappingVariables" :key="key">
                         <td style="width: 40%">
                           {{key}}
                         </td>
                         <td style="padding: 0">
-                          <v-select :reduce="col => col.ColumnName"
-                                    v-model="screen.layout.transform.item[key]" :options="screenColumns"
+                          <v-select style="width: 80%" :reduce="col => col.ColumnName"
+                                    v-model="screen.layout.transform.item[key]" :options="screenColumnsList"
                                     value="ColumnName" label="ColumnName"></v-select>
                         </td>
                         <td></td>
@@ -362,15 +361,16 @@
     </q-page-container>
 
     <q-dialog v-model="newTabNameDialog" persistent>
-      <q-card style="min-width: 400px">
+      <q-card style="min-width: 400px; height: 600px">
         <q-card-section>
           <div class="text-h6">New tab</div>
         </q-card-section>
 
         <q-card-section>
           <q-input v-model="newTabName" placeholder="New Tab Label"></q-input>
-          <q-select v-model="newTabIcon" option-label="id" option-value="id" :options="icons" label="Icon">
-          </q-select>
+          <br>
+          Icon
+          <v-select v-model="newTabIcon" label="id" icon="id" value="id" :options="icons"></v-select>
 
         </q-card-section>
 
@@ -452,17 +452,27 @@
     <q-dialog v-model="iconSelection" style="width: 300px; height: 200px">
       <q-card>
         <q-card-section>
-          <input v-model="iconSearchText">
+
+          Tab title:
+          <q-input v-if="tabForIconEditor" v-model="tabForIconEditor.label"></q-input>
+
 
         </q-card-section>
         <q-card-section>
           <div class="row">
-            <div @click="setIcon(icon)" class="col-4 select-icon" style="padding: 20px; text-align: center"
-                 v-for="icon in currentPageIcons"
-                 :key="icon.id">
-              <q-icon size="xl" style="font-size: 40px" :name="icon.id"></q-icon>
-              <br>
-              <span>{{icon.id}}</span>
+            <div class="col-12">
+              <input v-model="iconSearchText"><br>
+            </div>
+            <div class="col-12">
+              <div class="row">
+                <div @click="setIcon(icon)" class="col-4 select-icon" style="padding: 20px; text-align: center"
+                     v-for="icon in currentPageIcons"
+                     :key="icon.id">
+                  <q-icon size="xl" style="font-size: 40px" :name="icon.id"></q-icon>
+                  <br>
+                  <span>{{icon.id}}</span>
+                </div>
+              </div>
             </div>
           </div>
         </q-card-section>
@@ -487,9 +497,8 @@
 
         <q-card-section>
           <q-input dense v-model="newActionName" label="Action Name" autofocus @keyup.enter="prompt = false"/>
-          <q-select dense v-model="newActionType" :options="['relocate', 'post', 'put', 'delete', 'action']"
-                    label="Action Type"
-                    autofocus @keyup.enter="prompt = false"/>
+          <v-select v-model="newActionType" :options="['relocate', 'post', 'put', 'delete', 'action']"
+                    label="Action Type"/>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
@@ -538,6 +547,7 @@
   import jexcel from 'jexcel';
 
   require('jexcel/dist/jexcel.min.css')
+  import easydropdown from 'easydropdown';
 
 
   String.prototype.toUnderscore = function () {
@@ -575,7 +585,7 @@
 
         if (newTab == "data") {
 
-          if (!that.editorTab) {
+          if (!that.editorTab && that.userModels.length > 0) {
             that.editorTab = that.userModels[0].table_name;
           } else {
             that.setGridData(that.editorTab)
@@ -612,6 +622,11 @@
         'userModels',
         'serverActions'
       ]),
+      mappingVariables: function () {
+        console.log("return variables", this.templateMap, this.screens[0].layout.template)
+        // this.$set(this.screenColumnsList, key, item);
+        return this.templateMap[this.screens[0].layout.template].variables;
+      },
       currentPageIcons: function () {
         const that = this;
         if (this.iconSearchText == null || this.iconSearchText.trim().length == 0) {
@@ -622,9 +637,6 @@
             return e.id.indexOf(that.iconSearchText) > -1;
           }).slice((this.currentIconPage - 1) * this.iconsPerPage, this.currentIconPage * this.iconsPerPage)
         }
-      },
-      screenColumns: function () {
-        return this.screens[0].table.schema.Columns;
       }
     },
     name: "MyLayout",
@@ -640,6 +652,7 @@
         newScreenNameDialog: false,
         newActionNameDialog: false,
         iconSelection: false,
+        tabForIconEditor: null,
         showMapping: true,
         deleteTabDialog: false,
         newMappingDialog: false,
@@ -661,6 +674,7 @@
         newActionType: '',
         templateMap: {},
         data: null,
+        screenColumnsList: [],
         newTableName: null,
         newTableDialog: false,
         editorTab: null,
@@ -668,6 +682,10 @@
       };
     },
     methods: {
+      screenColumns: function () {
+        this.screenColumnsList = this.screens[0].table.schema.Columns;
+        console.log("screen column mapping list", this.screenColumnsList, JSON.stringify(this.screenColumnsList))
+      },
       newTable(tableName) {
         const that = this;
         console.log("new table add", tableName)
@@ -703,6 +721,9 @@
         }
       },
       setGridData(tableName) {
+        if (!tableName) {
+          return
+        }
 
 
         const that = this;
@@ -710,16 +731,25 @@
         const dataModel = that.userModels.filter(function (e) {
           return e.table_name == tableName
         })[0]
+        const schema = JSON.parse(dataModel.world_schema_json);
+        const schemaColumns = schema.Columns;
+
+        var fkeys = schemaColumns.filter(function (e) {
+          return e.IsForeignKey
+        }).map(function (e) {
+          return e.ForeignKeyData.Namespace
+        }).join(",");
 
         that.getData({
           layout: {
             type: "list",
-            item: tableName
+            item: tableName,
+          },
+          params: {
+            included_relations: fkeys,
           }
         }).then(function (data) {
           console.log("Table data", dataModel, tableName, data);
-          const schema = JSON.parse(dataModel.world_schema_json);
-          const schemaColumns = schema.Columns;
 
           var headers = [];
           var columns = [];
@@ -745,20 +775,93 @@
             if (column.Name.substring(0, 2) == "__") {
               continue
             }
+            let jColumn = {
+              type: 'text',
+              title: column.ColumnName,
+              width: 300,
+            };
 
-            // if (column.IsForeignKey) {
-            //   continue;
-            // }
+            if (column.IsForeignKey) {
+              console.log("foreking column", column)
+
+              var customColumn = (function (tableName) {
+                var selectColumn = null;
+                return {
+                  // Methods
+                  closeEditor: function (cell, save) {
+                    console.log("close editor", cell, save, cell.innerText)
+                    var value = cell.children[0].value;
+                    cell.innerHTML = value;
+                    return value;
+                  },
+                  openEditor: function (cell) {
+                    // Create input
+                    var value = cell.innerText;
+
+                    console.log("default is ", value)
+                    that.getData({
+                      layout: {
+                        type: "list",
+                        item: tableName,
+                        page: {
+                          size: 500
+                        },
+                      }
+                    }).then(function (data) {
+                      console.log("got data", data);
+
+
+                      selectColumn = document.createElement("select");
+
+                      var defaultOption = document.createElement("option");
+                      defaultOption.innerText = '';
+                      selectColumn.appendChild(defaultOption)
+
+                      for (var i = 0; i < data.length; i++) {
+                        // console.log("add option", data[i]);
+                        var option = document.createElement("option");
+                        option.innerText = data[i].reference_id;
+                        if (value == data[i].reference_id) {
+                          option.selected = true;
+                        }
+                        selectColumn.appendChild(option)
+                      }
+
+
+                      cell.innerHTML = '';
+                      cell.appendChild(selectColumn);
+                      selectColumn.focus();
+
+
+                    });
+
+                  },
+                  getValue: function (cell) {
+                    console.log("cell get value", tableName, cell.innerHTML)
+                    if (cell.children.length > 0) {
+                      return {id: cell.children[0].value, type: 'entity'};
+                    } else {
+
+                      return {id: cell.innerText, type: 'entity'};
+                    }
+                  },
+                  setValue: function (cell, value) {
+                    console.log("set value for cell", value)
+                    cell.innerText = value;
+                  }
+                }
+              }(column.ForeignKeyData.Namespace))
+
+              // continue;
+              jColumn.editor = customColumn
+            }
 
             if (skipColumns.indexOf(column.ColumnName) > -1) {
               continue;
             }
             headers.push(column.ColumnName);
-            columns.push({
-              type: 'text',
-              title: column.ColumnName,
-              width: 300,
-            })
+
+            columns.push(jColumn)
           }
           var widths = [];
           var maxLength = [];
@@ -783,13 +886,14 @@
 
           for (var i = 0; i < rows.length; i++) {
             var row = [];
+            console.log("Create row ", rows[i])
             for (var j in headers) {
               var column = headers[j];
               // console.log("spps s", i, column, column, rows[i])
               if (rows[i][column] instanceof Array) {
                 row.push(rows[i][column].join(","))
               } else if (rows[i][column] instanceof Object) {
-                row.push(JSON.stringify(rows[i][column]))
+                row.push(rows[i][column]["reference_id"])
               } else {
                 row.push(rows[i][column])
               }
@@ -846,10 +950,26 @@
 
                 for (let i = 0; i < columns.length; i++) {
                   var colName = columns[i].title
+
+
+                  var columnModel = schemaColumns.filter(function (e) {
+                    return e.ColumnName == colName;
+                  })[0];
+
                   var val = row[i];
-                  console.log("col ", colName, val);
+                  console.log("new col ", colName, val);
                   if (val && val.length > 0) {
-                    newRow[colName] = val
+
+                    if (columnModel.IsForeignKey) {
+                      newRow[colName] = {
+                        id: val,
+                        type: 'entity'
+                      }
+                    } else {
+
+                      newRow[colName] = val
+                    }
+
                   }
                   newGridRow.push(val)
                 }
@@ -873,10 +993,27 @@
                 var existingRow = data[yCell];
                 var updatedColumn = columns[xCell].title;
                 console.log("update row", updatedColumn, existingRow);
+
+                var columnModel = schemaColumns.filter(function (e) {
+                  return e.ColumnName == updatedColumn;
+                })[0];
+
                 existingRow[updatedColumn] = newValue;
-                console.log("update row", existingRow);
+
+                console.log("update row", existingRow, columnModel);
                 var attrs = {};
-                attrs[updatedColumn] = newValue;
+
+
+                if (columnModel.IsForeignKey) {
+                  attrs[updatedColumn] = {
+                    id: newValue,
+                    type: 'entity'
+                  };
+                } else {
+                  attrs[updatedColumn] = newValue;
+                }
+
+
                 attrs["reference_id"] = existingRow.id
                 attrs["id"] = existingRow.id
                 attrs["table_name"] = tableName;
@@ -887,9 +1024,9 @@
                   }
                 ).then(function (response) {
                   console.log("update response", response);
-                  if (newValue != response.data[updatedColumn]) {
-                    spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
-                  }
+                  // if (newValue != response.data[updatedColumn]) {
+                  //   spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
+                  // }
                 });
               }
             },
@@ -950,7 +1087,7 @@
                     new_column_name: newColumnName,
                     world_id: model.id
                   }
-                }).then(function(){
+                }).then(function () {
                   that.columns
                 })
 
@@ -1113,10 +1250,17 @@
         this.screens.push(screen)
         // this.setTab(this.tab);
       },
-      setIcon(icon) {
+      setIcon(icon, tab) {
         console.log("set icon")
-        this.screens[0].icon = icon.id
+        if (!icon) {
+          this.iconSelection = true;
+          this.tabForIconEditor = tab;
+          return;
+        }
+        this.tabForIconEditor.icon = icon.id
         this.iconSelection = false;
+        this.saveConfig();
+        this.reloadPreview();
       },
       newLayout(name, done) {
         console.log("add new layout", name)
@@ -1148,8 +1292,18 @@
           done(newTemplateName, "add-unique")
         }
       },
+      updateScreenLayoutItem(screen) {
+        console.log("updated screen layout item", screen.layout.item);
+        // let screen1 = this.screens[0];
+        this.screens[0].table = this.getWorldSchema(screen.layout.item);
+        // this.screens = [];
+        // this.$set(this.screens, [screen1])
+        this.screenColumnsList = this.screens[0].table.schema.Columns;
+        console.log("updated screeen table")
+      },
       updateScreenType(screen) {
         console.log("update screen type", screen)
+
         const existingPath = screen.path;
         let newPath = null;
         if (screen.layout.type == "list") {
@@ -1166,6 +1320,8 @@
           }
           this.saveConfig()
         }
+        this.mappingVariables();
+        this.screenColumns();
       },
       updateScreenTemplate(screen) {
         if (!screen.layout.template) {
@@ -1195,6 +1351,7 @@
         // this.setTab(this.tab)
 
         this.showMapping = false;
+        this.screenColumns()
         const that = this;
         setTimeout(function () {
           that.showMapping = true;
@@ -1269,6 +1426,10 @@
       },
       addTab(tabName, newTabIcon) {
         this.newTabNameDialog = false;
+
+        if (!newTabName) {
+          return
+        }
 
         var newLayoutForTab = toSnakeCase(tabName);
 
@@ -1379,6 +1540,8 @@
           actionName: "TabItemClick",
           table: worldSchema
         });
+
+        this.screenColumnsList = this.screens[0].table.schema.Columns;
 
 
         if (!layout.actions) {
