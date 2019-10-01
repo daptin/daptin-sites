@@ -8,6 +8,38 @@ const routes = [
 
     path: "/make",
     component: () => import("layouts/MakerLayout.vue"),
+    children: [
+      {
+        path: 'settings',
+        name: "App Settings",
+        component: () => import("pages/maker/AppSettings.vue")
+      },
+      {
+        path: 'screens',
+        name: "Screens",
+        component: () => import("pages/maker/Screens.vue")
+      },
+      {
+        path: 'events',
+        name: "Events",
+        component: () => import("pages/maker/Events.vue")
+      },
+      {
+        path: 'publish',
+        name: "Publish",
+        component: () => import("pages/maker/Publish.vue")
+      },
+      {
+        path: 'data/:tableName',
+        name: "Data Grid",
+        component: () => import("pages/maker/DataGrid.vue")
+      },
+      {
+        path: 'data',
+        name: "Data Grid",
+        component: () => import("pages/maker/DataGrid.vue")
+      },
+    ]
   },
   {
     path: "/experiment1",
@@ -20,13 +52,13 @@ const routes = [
   {
     path: "/experiment3",
     component: () => import("pages/IconTabLayoutSearch.vue")
-  }, 
+  },
   {
     path: "/experiment4",
     component: () => import("pages/headerTabIcon.vue")
   },
   {
-    path: "/",
+    path: "",
     component: () => import("layouts/MyLayout.vue"),
     children: [
       {
@@ -35,11 +67,11 @@ const routes = [
         component: () => import("pages/TemplateView.vue")
       },
       {
-        path: "/:layout/:referenceId",
+        path: ":layout/:referenceId",
         component: () => import("pages/TemplateView.vue")
       },
       {
-        path: "/:layout",
+        path: ":layout",
         component: () => import("pages/TemplateView.vue")
       }
     ]
