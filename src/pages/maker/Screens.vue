@@ -237,8 +237,6 @@
     mounted() {
       console.log("mounted screens");
       console.log("maasdfaf", this.$route)
-      var layoutName = this.$router
-
       const templates = this.appLayout.templates;
       const templateMap = {};
       for (var i = 0; i < templates.length; i++) {

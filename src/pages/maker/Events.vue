@@ -193,7 +193,11 @@
         templateMap[template.name] = template
       }
       this.templateMap = templateMap;
-      this.setTab('home')
+      if (this.$route.query.layout) {
+        this.pushScreens(this.$route.query.layout)
+      } else {
+        this.setTab('home')
+      }
 
     },
     methods: {
