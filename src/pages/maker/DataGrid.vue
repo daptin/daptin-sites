@@ -156,7 +156,7 @@
             item: tableName,
           },
           params: {
-            included_relations: fkeys,
+            included_relations: "*",
           }
         }).then(function (data) {
           console.log("Table data", dataModel, tableName, data);
@@ -171,9 +171,11 @@
 
 
           // let keys = Object.keys(data[0]);
+          var columnMap = {};
           for (var columnId in schemaColumns) {
             var column = schemaColumns[columnId];
-            console.log("column ", column)
+            console.log("column ", column);
+            columnMap[column.ColumnName] = column
 
             if (!column.Name) {
               console.log("Column has no name", column);
@@ -195,96 +197,9 @@
 
               if (column.ColumnType.startsWith("image.")) {
                 console.log("image column", column)
-                jColumn.editor = (function (tableName) {
-
-                  return {
-                    // Methods
-                    closeEditor: function (cell, save) {
-                      var value = cell.children[0].value;
-                      cell.innerHTML = value;
-                      return value;
-                    },
-                    openEditor: function (cell) {
-                      return
-                      // Create input
-                      var value = cell.innerText;
-                      if (!options) {
-
-
-                        that.getData({
-                          layout: {
-                            type: "list",
-                            item: tableName,
-                            page: {
-                              size: 500
-                            },
-                          }
-                        }).then(function (data) {
-                          options = data;
-                          selectColumn = document.createElement("select");
-
-                          var defaultOption = document.createElement("option");
-                          defaultOption.innerText = '';
-                          selectColumn.appendChild(defaultOption)
-
-                          for (var i = 0; i < data.length; i++) {
-                            // console.log("add option", data[i]);
-                            var option = document.createElement("option");
-                            option.innerText = data[i].reference_id;
-                            if (value == data[i].reference_id) {
-                              option.selected = true;
-                            }
-                            selectColumn.appendChild(option)
-                          }
-
-
-                          cell.innerHTML = '';
-                          cell.appendChild(selectColumn);
-                          selectColumn.focus();
-
-
-                        });
-                      } else {
-                        var data = options;
-                        selectColumn = document.createElement("select");
-
-                        var defaultOption = document.createElement("option");
-                        defaultOption.innerText = '';
-                        selectColumn.appendChild(defaultOption)
-
-                        for (var i = 0; i < data.length; i++) {
-                          // console.log("add option", data[i]);
-                          var option = document.createElement("option");
-                          option.innerText = data[i].reference_id;
-                          if (value == data[i].reference_id) {
-                            option.selected = true;
-                          }
-                          selectColumn.appendChild(option)
-                        }
-
-
-                        cell.innerHTML = '';
-                        cell.appendChild(selectColumn);
-                        selectColumn.focus();
-                      }
-
-                    },
-                    getValue: function (cell) {
-                      console.log("cell get value", tableName, cell.innerHTML)
-                      if (cell.children.length > 0) {
-                        return {id: cell.children[0].value, type: 'entity'};
-                      } else {
-
-                        return {id: cell.innerText, type: 'entity'};
-                      }
-                    },
-                    setValue: function (cell, value) {
-                      console.log("set value for cell", value)
-                      cell.innerText = value;
-                    }
-                  }
-
-                })(column.ColumnName)
+                // jColumn.editor = (wcolumn.ColumnName)
+                // jColumn.type = "image";
+                jColumn.width = 120;
 
               } else {
                 jColumn.editor = (function (tableName) {
@@ -418,7 +333,19 @@
             for (var j in headers) {
               var column = headers[j];
               // console.log("spps s", i, column, column, rows[i])
-              if (rows[i][column] instanceof Array) {
+              var colInfo = columnMap[column];
+              if (colInfo.ColumnType.startsWith("image.")) {
+                console.log("image column")
+                var imgElement = document.createElement("img");
+                let imageSource = that.appLayout.endpoint + "/asset/" + tableName + "/" + rows[i]["id"] + "/" + column + ".png";
+                imgElement.src = imageSource;
+                row.push('<img style="height:100px;" src="' + imageSource + '">')
+                // if (rows[i][column] && rows[i][column].length > 0) {
+                //   row.push("data:image/png;base64," + rows[i][column][0]["contents"])
+                // } else {
+                //   row.push('');
+                // }
+              } else if (rows[i][column] instanceof Array) {
                 row.push(rows[i][column].join(","))
               } else if (rows[i][column] instanceof Object) {
                 row.push(rows[i][column]["reference_id"])
@@ -482,7 +409,7 @@
               }
               console.log("arguments on delete row", arguments)
             },
-            onpaste: function() {
+            onpaste: function () {
               console.log("grid pasete even", arguments)
             },
             onchange: function (gridContainer, tdContainer, xCell, yCell, newValue, oldValue) {

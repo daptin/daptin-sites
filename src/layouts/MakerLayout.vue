@@ -9,33 +9,31 @@
       <q-list>
         <q-item-label header><h3 style="color: white">Make</h3></q-item-label>
 
-        <q-item clickable>
+        <q-item clickable @click="$router.push('/make/settings')">
           <q-item-section>
-            <router-link to="/make/settings">App Layout</router-link>
+            App Layout
           </q-item-section>
         </q-item>
-        <q-item clickable>
+        <q-item clickable @click="$router.push('/make/screens')">
           <q-item-section>
-            <router-link to="/make/screens">Screens</router-link>
+            Screens
           </q-item-section>
         </q-item>
-        <q-item clickable>
+        <q-item clickable @click="$router.push('/make/events')">
           <q-item-section>
-            <router-link to="/make/events">Events</router-link>
+            Events
           </q-item-section>
         </q-item>
-        <q-item clickable>
+        <q-item clickable @click="$router.push('/make/data')">
           <q-item-section>
-            <router-link to="/make/data">Data</router-link>
+            Data
           </q-item-section>
         </q-item>
-        <q-item clickable>
+        <q-item clickable @click="$router.push('/make/publish')">
           <q-item-section>
-            <router-link to="/make/publish">Publish</router-link>
+            Publish
           </q-item-section>
         </q-item>
-
-
       </q-list>
 
 
