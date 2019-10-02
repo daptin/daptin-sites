@@ -103,6 +103,10 @@
         this.$router.push("/")
       }
 
+      // if (this.$route.path == "/make") {
+      //   this.$router.push("/make/screen")
+      // }
+
       // this.layouts = Object.keys(this.appLayout.layoutConfiguration)
       // this.setTab('home');
       // localStorage.setItem("config", JSON.stringify(this.appLayout))

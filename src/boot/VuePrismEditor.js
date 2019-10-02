@@ -4,7 +4,7 @@ import * as editor from "vue2-ace-editor"
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 import 'semantic-ui-css/semantic.min.css';
-
+import FileUpload from 'vue-upload-component'
 
 import ace from 'brace'
 import 'brace/mode/html'
@@ -20,6 +20,7 @@ export default async ({Vue}) => {
   Vue.use(VueTabs)
   Vue.component("editor", editor);
   Vue.component('v-select', vSelect);
+  Vue.component('file-upload', FileUpload);
 
   Vue.component('tabs', {
     template: `

@@ -34,6 +34,7 @@
     "vue-markdown": "^2.2.4",
     "vue-nav-tabs": "^0.5.7",
     "vue-select": "^3.1.0",
+    "vue-upload-component": "^2.8.20",
     "vue2-ace-editor": "^0.0.13"
   },
   "devDependencies": {

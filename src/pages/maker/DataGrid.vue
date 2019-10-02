@@ -9,7 +9,7 @@
         transition-next="jump-up">
         <q-tab-panel :key="table" v-for="table in userModels.map(function(e){return e.table_name})" :name="table"
                      :label="table">
-          <div class="row" style="height: 90vh">
+          <div class="row" style="height: 93vh">
             <div class="col-12" :id="'dataGrid_' + table" :ref="'dataViewDiv_' + table"></div>
           </div>
         </q-tab-panel>
@@ -17,17 +17,60 @@
     </div>
 
 
-    <div class="col-1" style="height: 50px;">
-      <q-btn style="width: 80%;height: 80%;margin-left: 10px;margin-top: 5px;" @click.prevent="newTable()" label=""
+    <div class="col-1" style="height: 50px; position: absolute; bottom: 0;">
+      <q-btn style="width: 100px;height: 80%;margin-left: 10px;margin-top: 5px;" @click.prevent="newTable()" label=""
              icon="add"></q-btn>
     </div>
-    <div class="col-11" style="height: 50px;">
+    <div class="col-11" style="height: 50px; position: absolute; bottom: 0; padding-left: 120px">
       <q-tabs align="left" v-model="editorTab">
         <q-tab :key="table.table_name" v-for="table in userModels.map(function(e){return e.table_name})"
                :label="table" :name="table">
         </q-tab>
       </q-tabs>
     </div>
+    <q-dialog v-model="imageUpload" persistent>
+
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Image</div>
+        </q-card-section>
+
+        <q-card-section>
+          <ul v-if="files.length">
+            <li v-for="(file) in files" :key="file.id">
+              <span>{{file.name}}</span> -
+              <span>{{file.size}}</span> -
+              <span v-if="file.error">{{file.error}}</span>
+              <span v-else-if="file.success">success</span>
+              <span v-else-if="file.active">active</span>
+              <span v-else></span>
+            </li>
+          </ul>
+        </q-card-section>
+        <q-card-section>
+
+          <file-upload
+            class="btn btn-primary"
+            :multiple="false"
+            :drop="true"
+            :drop-directory="true"
+            v-model="files"
+            ref="upload">
+            <i class="fa fa-plus"></i>
+            Select files
+          </file-upload>
+
+
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Add" @click="uploadColumnImage(files)" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+
+
+    </q-dialog>
 
 
     <q-dialog v-model="newTableDialog" persistent>
@@ -55,7 +98,6 @@
   import {mapActions, mapGetters} from 'vuex';
 
   require('jexcel/dist/jexcel.min.css');
-  const debounce = require('debounce');
 
   export default {
     computed: {
@@ -67,8 +109,13 @@
     data() {
       return {
         newTableDialog: false,
+        imageUpload: false,
+        files: [],
+        data: [],
         newTableName: null,
         editorTab: null,
+        photoColumnName: null,
+        rowId: null,
       }
     },
     watch: {
@@ -83,6 +130,45 @@
     },
     name: "DataGrid",
     methods: {
+      uploadColumnImage(files) {
+        console.log("set column image", this.rowId, this.photoColumnName, files, files[0].data)
+
+        var dataRow = this.data[this.rowId];
+        let reader = new FileReader();
+
+        console.log("data row to edit", dataRow)
+        reader.onload = (e) => {
+          console.log("file read", arguments)
+          var value = e.target.result;
+
+          var attrs = {}
+          attrs["reference_id"] = dataRow["id"]
+          attrs["id"] = dataRow["id"]
+          attrs["table_name"] = this.editorTab
+          attrs[this.photoColumnName] = [{
+            file: value,
+            name: files[0].name,
+            type: files[0].type,
+          }]
+
+          this.invokeEvent({
+              type: "put",
+              params: attrs
+            }
+          ).then(function (response) {
+            console.log("update image response", response);
+            // if (newValue != response.data[updatedColumn]) {
+            //   spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
+            // }
+          })
+
+
+        };
+
+        reader.readAsDataURL(files[0].file);
+
+
+      },
       ...mapActions([
         'setLayout',
         'getData',
@@ -160,7 +246,7 @@
           }
         }).then(function (data) {
           console.log("Table data", dataModel, tableName, data);
-
+          that.data = data;
           var headers = [];
           var columns = [];
           var ids = [];
@@ -200,6 +286,53 @@
                 // jColumn.editor = (wcolumn.ColumnName)
                 // jColumn.type = "image";
                 jColumn.width = 120;
+
+                jColumn.editor = (function (columnName) {
+                  var selectColumn = null;
+                  return {
+                    // Methods
+                    closeEditor: function (cell, save) {
+                      console.log("close editor", arguments)
+                      var value = cell.innerHTML;
+                      if (!value) {
+                        return;
+                      }
+                      cell.innerHTML = value;
+                      return value;
+                    },
+                    openEditor: function (td, gridContainer) {
+                      // Create input
+                      var rowId = td.getAttribute("data-y");
+                      console.log("Open editor", arguments)
+                      var value = td.innerText;
+
+
+                      that.photoColumnName = columnName;
+                      console.log("edit photo", columnName, rowId)
+                      that.rowId = rowId;
+                      that.imageUpload = true;
+
+
+                    },
+                    getValue: function (cell) {
+                      console.log("cell get value", tableName, cell.innerHTML)
+                      if (cell.children.length > 0) {
+                        return {id: cell.children[0].value, type: 'entity'};
+                      } else {
+
+                        return {id: cell.innerText, type: 'entity'};
+                      }
+                    },
+                    setValue: function (cell, value) {
+                      if (!value) {
+                        return
+                      }
+                      console.log("set value for cell", value)
+                      cell.innerText = value;
+                    }
+                  }
+                }(column.ColumnName))
+
 
               } else {
                 jColumn.editor = (function (tableName) {
@@ -337,14 +470,9 @@
               if (colInfo.ColumnType.startsWith("image.")) {
                 console.log("image column")
                 var imgElement = document.createElement("img");
-                let imageSource = that.appLayout.endpoint + "/asset/" + tableName + "/" + rows[i]["id"] + "/" + column + ".png";
+                let imageSource = that.appLayout.endpoint + "/asset/" + tableName + "/" + rows[i]["id"] + "/" + column + ".png?resize=200,100,Box";
                 imgElement.src = imageSource;
-                row.push('<img style="height:100px;" src="' + imageSource + '">')
-                // if (rows[i][column] && rows[i][column].length > 0) {
-                //   row.push("data:image/png;base64," + rows[i][column][0]["contents"])
-                // } else {
-                //   row.push('');
-                // }
+                row.push('<img src="' + imageSource + '">')
               } else if (rows[i][column] instanceof Array) {
                 row.push(rows[i][column].join(","))
               } else if (rows[i][column] instanceof Object) {
@@ -402,7 +530,7 @@
                 }
                 let referenceId = data[i].id;
                 console.log("Delete row", referenceId)
-                that.fireEvent({
+                that.invokeEvent({
                   type: 'delete',
                   params: referenceId
                 })
