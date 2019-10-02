@@ -9,7 +9,7 @@
         transition-next="jump-up">
         <q-tab-panel :key="table" v-for="table in userModels.map(function(e){return e.table_name})" :name="table"
                      :label="table">
-          <div class="row" style="height: 93vh">
+          <div class="row" style="height: 90vh">
             <div class="col-12" :id="'dataGrid_' + table" :ref="'dataViewDiv_' + table"></div>
           </div>
         </q-tab-panel>
