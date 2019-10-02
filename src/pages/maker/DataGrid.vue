@@ -279,6 +279,10 @@
               width: 300,
             };
 
+            if (column.ColumnType == "datetime") {
+              jColumn.type = "calendar"
+            }
+
             if (column.IsForeignKey) {
 
               if (column.ColumnType.startsWith("image.")) {
@@ -747,5 +751,7 @@
 </script>
 
 <style scoped>
-
+  .highlight {
+    color: darkblue;
+  }
 </style>
