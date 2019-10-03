@@ -36,36 +36,23 @@
         </q-card-section>
 
         <q-card-section>
-          <ul v-if="files.length">
-            <li v-for="(file) in files" :key="file.id">
-              <span>{{file.name}}</span> -
-              <span>{{file.size}}</span> -
-              <span v-if="file.error">{{file.error}}</span>
-              <span v-else-if="file.success">success</span>
-              <span v-else-if="file.active">active</span>
-              <span v-else></span>
-            </li>
-          </ul>
-        </q-card-section>
-        <q-card-section>
-
-          <file-upload
+          <img
+            :src="appLayout.endpoint + '/asset/' + editorTab + '/' + selectedRowReferenceId  + '/' + photoColumnName  + '.png'"/><br>
+          <file-upload @input="uploadColumnImage"
             class="btn btn-primary"
             :multiple="false"
             :drop="true"
             :drop-directory="true"
             v-model="files"
             ref="upload">
-            <i class="fa fa-plus"></i>
-            Select files
+            <q-btn color="blue" label="Upload file"></q-btn>
           </file-upload>
 
 
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup/>
-          <q-btn flat label="Add" @click="uploadColumnImage(files)" v-close-popup/>
+          <q-btn flat label="Ok" v-close-popup/>
         </q-card-actions>
       </q-card>
 
@@ -115,7 +102,8 @@
         newTableName: null,
         editorTab: null,
         photoColumnName: null,
-        rowId: null,
+        selectedRowId: null,
+        selectedRowReferenceId: null,
       }
     },
     watch: {
@@ -131,9 +119,10 @@
     name: "DataGrid",
     methods: {
       uploadColumnImage(files) {
-        console.log("set column image", this.rowId, this.photoColumnName, files, files[0].data)
+        const that = this;
+        console.log("set column image", this.selectedRowId, this.photoColumnName, files, files[0].data)
 
-        var dataRow = this.data[this.rowId];
+        var dataRow = this.data[this.selectedRowId];
         let reader = new FileReader();
 
         console.log("data row to edit", dataRow)
@@ -157,6 +146,7 @@
             }
           ).then(function (response) {
             console.log("update image response", response);
+            that.imageUpload = false;
             // if (newValue != response.data[updatedColumn]) {
             //   spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
             // }
@@ -306,14 +296,15 @@
                     },
                     openEditor: function (td, gridContainer) {
                       // Create input
-                      var rowId = td.getAttribute("data-y");
+                      var selectedRowId = td.getAttribute("data-y");
+                      that.selectedRowReferenceId = data[selectedRowId]["id"];
                       console.log("Open editor", arguments)
                       var value = td.innerText;
 
 
                       that.photoColumnName = columnName;
-                      console.log("edit photo", columnName, rowId)
-                      that.rowId = rowId;
+                      console.log("edit photo", columnName, selectedRowId)
+                      that.selectedRowId = selectedRowId;
                       that.imageUpload = true;
 
 

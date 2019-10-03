@@ -36,7 +36,7 @@ const routes = [
       },
       {
         path: 'data',
-        name: "Data Grid",
+        name: "Data Grid Instance",
         component: () => import("pages/maker/DataGrid.vue")
       },
     ]
