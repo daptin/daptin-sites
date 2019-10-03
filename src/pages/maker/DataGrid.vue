@@ -39,12 +39,12 @@
           <img
             :src="appLayout.endpoint + '/asset/' + editorTab + '/' + selectedRowReferenceId  + '/' + photoColumnName  + '.png'"/><br>
           <file-upload @input="uploadColumnImage"
-            class="btn btn-primary"
-            :multiple="false"
-            :drop="true"
-            :drop-directory="true"
-            v-model="files"
-            ref="upload">
+                       class="btn btn-primary"
+                       :multiple="false"
+                       :drop="true"
+                       :drop-directory="true"
+                       v-model="files"
+                       ref="upload">
             <q-btn color="blue" label="Upload file"></q-btn>
           </file-upload>
 
@@ -104,6 +104,7 @@
         photoColumnName: null,
         selectedRowId: null,
         selectedRowReferenceId: null,
+        selectedCellTd: null,
       }
     },
     watch: {
@@ -120,6 +121,9 @@
     methods: {
       uploadColumnImage(files) {
         const that = this;
+        if (!files || files.length < 1) {
+          return;
+        }
         console.log("set column image", this.selectedRowId, this.photoColumnName, files, files[0].data)
 
         var dataRow = this.data[this.selectedRowId];
@@ -147,9 +151,12 @@
           ).then(function (response) {
             console.log("update image response", response);
             that.imageUpload = false;
-            // if (newValue != response.data[updatedColumn]) {
-            //   spreadsheet.setValueFromCoords(xCell, yCell, response.data[updatedColumn])
-            // }
+            const data = that.selectedCellTd.innerHTML;
+            that.selectedCellTd.innerHTML = '';
+            setTimeout(function () {
+              console.log("image", data);
+              that.selectedCellTd.innerHTML = data;
+            }, 300)
           })
 
 
@@ -279,7 +286,7 @@
                 console.log("image column", column)
                 // jColumn.editor = (wcolumn.ColumnName)
                 // jColumn.type = "image";
-                jColumn.width = 120;
+                jColumn.width = 200;
 
                 jColumn.editor = (function (columnName) {
                   var selectColumn = null;
@@ -298,6 +305,7 @@
                       // Create input
                       var selectedRowId = td.getAttribute("data-y");
                       that.selectedRowReferenceId = data[selectedRowId]["id"];
+                      that.selectedCellTd = td;
                       console.log("Open editor", arguments)
                       var value = td.innerText;
 
@@ -465,9 +473,9 @@
               if (colInfo.ColumnType.startsWith("image.")) {
                 console.log("image column")
                 var imgElement = document.createElement("img");
-                let imageSource = that.appLayout.endpoint + "/asset/" + tableName + "/" + rows[i]["id"] + "/" + column + ".png?resize=200,100,Box";
+                let imageSource = that.appLayout.endpoint + "/asset/" + tableName + "/" + rows[i]["id"] + "/" + column + ".png";
                 imgElement.src = imageSource;
-                row.push('<img src="' + imageSource + '">')
+                row.push('<img style="width: 100%" src="' + imageSource + '">')
               } else if (rows[i][column] instanceof Array) {
                 row.push(rows[i][column].join(","))
               } else if (rows[i][column] instanceof Object) {
@@ -496,6 +504,11 @@
           }
 
           for (var i = 0; i < maxLength.length; i++) {
+
+            if (columnMap[headers[i]].ColumnType.startsWith("image.")) {
+              continue
+            }
+
             if (maxLength[i] > 1000) {
               maxLength[i] = 1000;
             }

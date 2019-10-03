@@ -309,10 +309,6 @@
       addTab(tabName, newTabIcon) {
         this.newTabNameDialog = false;
 
-        if (!newTabName) {
-          return
-        }
-
         var newLayoutForTab = toSnakeCase(tabName);
 
         var layoutConfig = {
