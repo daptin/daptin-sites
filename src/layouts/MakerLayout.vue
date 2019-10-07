@@ -44,6 +44,26 @@
       <router-view></router-view>
     </q-page-container>
 
+
+    <q-dialog v-model="chiefUserLoginDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Login to Chief</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input label="Email" dense v-model="chiefUsername" autofocus @keyup.enter="prompt = false"/>
+          <q-input label="Password" dense v-model="chiefPassword" type="password" autofocus
+                   @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Login" @click="loginChief()"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
   </q-layout>
 
 
@@ -66,6 +86,7 @@
         'user',
         'layout',
         'models',
+        'chiefUser',
         'icons',
         'userModels',
         'serverActions'
@@ -76,23 +97,43 @@
       return {
         tab: null,
         screens: [],
+        chiefUsername: null,
+        chiefPassword: null,
         showMapping: true,
+        chiefUserLoginDialog: false,
         layouts: [],
         left: true,
         screenHistoryStack: []
       };
     },
     methods: {
+      loginChief() {
+        const that = this;
+        console.log("login chief", this.chiefUsername, this.chiefPassword);
+        this.loginSimplyUser({
+          'email': this.chiefUsername,
+          'password': this.chiefPassword,
+        }).then(function (response) {
+          console.log("Chief login complete", response)
+          if (that.chiefUser) {
+            that.chiefUserLoginDialog = false;
+          }
+        }).catch(function (e) {
+          console.log("Chief login failed", e)
+        })
+      },
       ...mapActions([
         'setLayout',
         'getData',
         'saveConfig',
         'setTemplate',
+        'loginSimplyUser',
         'addLayout',
         'addNewTab',
         'createTemplate',
         'refreshActions',
         'invokeEvent',
+        'invokeChiefEvent',
         'refreshModels']
       ),
     },
@@ -103,13 +144,21 @@
         this.$router.push("/")
       }
 
-      // if (this.$route.path == "/make") {
-      //   this.$router.push("/make/screen")
-      // }
+      console.log("Chief user: ", this.chiefUser);
+      if (!this.chiefUser) {
+        this.chiefUserLoginDialog = true;
+      } else {
 
-      // this.layouts = Object.keys(this.appLayout.layoutConfiguration)
-      // this.setTab('home');
-      // localStorage.setItem("config", JSON.stringify(this.appLayout))
+        this.invokeChiefEvent({
+          type: "get",
+          params: {
+            table_name: "application"
+          }
+        }).then(function (res) {
+          console.log("chief user applications", res)
+        })
+
+      }
       this.saveConfig()
 
     },

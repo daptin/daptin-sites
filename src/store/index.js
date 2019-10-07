@@ -13,7 +13,9 @@ console.log("Daptin client config endpoint", daptinClient.appConfig.endpoint);
 
 var defaultConfig = {
   user: null,
+  chiefUser: null,
   token: null,
+  chiefToken: null,
   currentTab: null,
   item: null,
   vars: {},

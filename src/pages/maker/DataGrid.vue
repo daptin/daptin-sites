@@ -17,7 +17,7 @@
     </div>
 
 
-    <div class="col-1" style="height: 50px; position: absolute; bottom: 0;">
+    <div class="col-1" style="height: 50px; position: absolute; bottom: 0; z-index: 100;">
       <q-btn style="width: 100px;height: 80%;margin-left: 10px;margin-top: 5px;" @click.prevent="newTable()" label=""
              icon="add"></q-btn>
     </div>
