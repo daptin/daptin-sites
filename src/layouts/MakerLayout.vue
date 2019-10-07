@@ -112,15 +112,56 @@
       </div>
 
       <div class="row" v-if="selectedTab == 'appSetting2'">
-        <div class="col-12" style="padding: 10vh 25vw">
-          this is the second coming boi
-          <br />
-          <q-btn color="secondary" label="tabicon" />
-          <q-btn color="secondary" label="searchtabicon" />
-          <q-btn color="secondary" label="labelicon" />
-          <q-btn color="secondary" label="labeliconfoot" />
-          <br />
-          <q-btn color="primary" @click="saveAndChangeTab('screens')" label="next" />
+        <div class="col-12" style="padding: 10vh 15vw">
+          <div class="q-pa-md row items-start q-gutter-md">
+
+
+            <q-card class="my-card">
+              <q-img src="../statics/images/layout-previews/experiment1.png" basic>
+              </q-img>
+              <q-card-section>
+              <div class="text-h6">Experiment1</div>
+              </q-card-section>
+              <q-card-actions vertical>
+                <q-btn outline color="secondary">Select</q-btn>
+              </q-card-actions>
+            </q-card>
+
+            <q-card class="my-card">
+              <q-img src="../statics/images/layout-previews/experiment2.png" basic>
+              </q-img>
+              <q-card-section>
+              <div class="text-h6">Experiment2</div>
+              </q-card-section>
+              <q-card-actions vertical>
+                <q-btn outline color="secondary">Select</q-btn>
+              </q-card-actions>
+            </q-card>
+
+            <q-card class="my-card">
+              <q-img src="../statics/images/layout-previews/experiment3.png" basic>
+              </q-img>
+              <q-card-section>
+              <div class="text-h6">Experiment3</div>
+              </q-card-section>
+              <q-card-actions vertical>
+                <q-btn outline color="secondary">Select</q-btn>
+              </q-card-actions>
+            </q-card>
+
+            <q-card class="my-card">
+              <q-img src="../statics/images/layout-previews/experiment4.png" basic>
+              </q-img>
+              <q-card-section>
+              <div class="text-h6">Experiment4</div>
+              </q-card-section>
+              <q-card-actions vertical>
+                <q-btn outline color="secondary">Select</q-btn>
+              </q-card-actions>
+            </q-card>
+
+            <q-btn color="primary" @click="saveAndChangeTab('screens')" label="next" />
+          </div>
         </div>
       </div>
 
@@ -656,6 +697,7 @@ export default {
   data() {
     return {
       selectedTab: "appSetting",
+      lorem: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       flowers: [],
       tabToDelete: null,
       tab: null,
