@@ -19,7 +19,9 @@
     "brace": "^0.11.1",
     "d3-hierarchy": "^1.1.8",
     "daptin-client": "^0.2.4",
+    "debounce": "^1.2.0",
     "gulp": "^4.0.2",
+    "jexcel": "^3.5.0",
     "jwt-decode": "^2.2.0",
     "mustache": "^3.0.1",
     "node-json-transform": "^1.0.19",
@@ -30,7 +32,9 @@
     "vue-filter-date-format": "^1.2.5",
     "vue-i18n": "^8.0.0",
     "vue-markdown": "^2.2.4",
+    "vue-nav-tabs": "^0.5.7",
     "vue-select": "^3.1.0",
+    "vue-upload-component": "^2.8.20",
     "vue2-ace-editor": "^0.0.13"
   },
   "devDependencies": {
@@ -46,7 +50,9 @@
     "eslint": "^5.10.0",
     "eslint-loader": "^2.1.1",
     "eslint-plugin-vue": "^5.0.0",
-    "jsplumb": "^2.10.2"
+    "jsplumb": "^2.10.2",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0"
   },
   "engines": {
     "node": ">= 8.9.0",

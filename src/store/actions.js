@@ -73,6 +73,55 @@ export default {
     commit("SET_PAGINATION", params)
     commit("")
   },
+  invokeEvent: ({commit, state}, actionConfig) => {
+    console.log("action invoked", actionConfig);
+
+    if (!actionConfig) {
+      console.log("no action defined");
+      return
+    }
+
+
+    switch (actionConfig.type) {
+      case "relocate":
+        const path = Mustache.render(actionConfig.params.path, actionConfig.params);
+        console.log("next path", path);
+        commit("SET_PATH", path);
+        break;
+      case "action":
+        const actionName = actionConfig.params.action_name;
+        const serverAction = state.serverActions.filter(function (e) {
+          return e.action_name == actionName
+        })[0];
+        console.log("execute server action", serverAction);
+        const actionSchema = JSON.parse(serverAction.action_schema);
+        return daptinClient.actionManager.doAction(actionSchema.OnType, actionName, actionConfig.params).catch(function (e) {
+          console.log("action failed", e);
+          for (var i in e) {
+            var res = e[i];
+            switch (res.ResponseType) {
+              case "client.notify":
+                alert(res.Attributes.message);
+                break;
+            }
+          }
+        });
+
+
+      case "put":
+        console.log("put request", actionConfig)
+        return daptinClient.jsonApi.update(actionConfig.params.table_name, actionConfig.params)
+
+      case "delete":
+        return daptinClient.jsonApi.destroy(actionConfig.params.table_name, actionConfig.params)
+
+      case "post":
+        return daptinClient.jsonApi.create(actionConfig.params.table_name, actionConfig.params)
+
+    }
+
+
+  },
   fireEvent: ({commit, state}, action) => {
     console.log("single item clicked", action);
 
@@ -98,9 +147,7 @@ export default {
         })[0];
         console.log("execute server action", serverAction);
         const actionSchema = JSON.parse(serverAction.action_schema);
-        daptinClient.actionManager.doAction(actionSchema.OnType, actionName, action.params).then(function (res) {
-          console.log("action complete", res)
-        }).catch(function (e) {
+        return daptinClient.actionManager.doAction(actionSchema.OnType, actionName, action.params).catch(function (e) {
           console.log("action failed", e);
           for (var i in e) {
             var res = e[i];
@@ -115,29 +162,15 @@ export default {
 
 
       case "put":
-
-        daptinClient.jsonApi.update(actionConfig.params.table_name, action.params).then(function (e) {
-          console.log("Put successful", e);
-        }).catch(function (e) {
-          console.log("Put action failed", e)
-        });
+        return daptinClient.jsonApi.update(actionConfig.params.table_name, action.params)
         break;
+
       case "delete":
-
-        daptinClient.jsonApi.destroy(actionConfig.params.table_name, action.params).then(function (e) {
-          console.log("Delete successful", e);
-        }).catch(function (e) {
-          console.log("Delete action failed", e)
-        });
-
+        return daptinClient.jsonApi.destroy(actionConfig.params.table_name, action.params)
         break;
-      case "post":
 
-        daptinClient.jsonApi.create(actionConfig.params.table_name, action.params).then(function (e) {
-          console.log("Post successful", e);
-        }).catch(function (e) {
-          console.log("Post action failed", e)
-        })
+      case "post":
+        return daptinClient.jsonApi.create(actionConfig.params.table_name, action.params)
 
     }
 
@@ -178,12 +211,17 @@ export default {
       }
     })
   },
+  addLayout: ({commit, state}, params) => {
+    console.log("add tab", params);
+    state.appLayout.layoutConfiguration[params.name] = params.config;
+  },
   addNewTab: ({commit, state}, params) => {
     console.log("add tab", params);
     state.appLayout.tabs.push(params)
   },
   refreshData: ({commit, state}, params) => {
 
+    console.log("refresh data ", state.currentLayout)
     if (!state.currentLayout) {
       return
     }
@@ -202,22 +240,28 @@ export default {
             params = {}
           }
           const finalParams = {...state.currentLayout.params, ...params};
-          daptinClient.jsonApi.findAll(state.currentLayout.item, finalParams).then(function (res) {
-            console.log("loaded data", res);
-            const data = res.data;
-            commit('SET_DATA', data);
+
+          daptinClient.worldManager.loadModel(state.currentLayout.item).then(function(){
+            daptinClient.jsonApi.findAll(state.currentLayout.item, finalParams).then(function (res) {
+              console.log("loaded data", res);
+              const data = res.data;
+              commit('SET_DATA', data);
 
 
-            if (state.currentLayout.type == "list") {
-              commit("SET_LOCAL_DATA", DataTransform({data: data}, state.currentLayout.transform).transform())
-            } else {
-              commit("SET_LOCAL_DATA", DataTransform({data: [data]}, state.currentLayout.transform).transform()[0])
-            }
+              if (state.currentLayout.type == "list") {
+                commit("SET_LOCAL_DATA", DataTransform({data: data}, state.currentLayout.transform).transform())
+              } else {
+                commit("SET_LOCAL_DATA", DataTransform({data: [data]}, state.currentLayout.transform).transform()[0])
+              }
 
 
-          }).catch(function (err) {
-            console.log("Failed to load data", err)
+            }).catch(function (err) {
+              console.log("Failed to load data", err)
+            })
+
           })
+
+
         } else {
           if (!params) {
             reject("no id provided");
@@ -238,7 +282,7 @@ export default {
           })
         }
       } else {
-        daptinClient.worldManager.loadModels().then(function () {
+        daptinClient.worldManager.loadModel(state.currentLayout.item).then(function () {
           commit("SET_LOADED", true);
           console.log("loaded all worlds");
 

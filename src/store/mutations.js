@@ -23,7 +23,7 @@ export default {
     console.log("path set")
   },
   SAVE_CONFIG: (state) => {
-    console.log("storing config to localstorage")
+    // console.log("storing config to localstorage", state.appLayout)
     localStorage.setItem("config", JSON.stringify(state))
   },
   SET_VAR: (state, params) => {

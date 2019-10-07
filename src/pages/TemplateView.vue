@@ -31,6 +31,7 @@
     name: "TemplateView",
     methods: {
       loadData() {
+        console.log("loading data")
         this.refreshData(this.$route.params.referenceId);
       },
       ...mapActions(['refreshData', 'setLayout'])

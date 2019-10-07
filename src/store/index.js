@@ -33,7 +33,10 @@ var defaultConfig = {
       background: "#ffffff",
       logourl: '',
       primary: '#027be3',
-      secondary: '#26a69a'
+      secondary: '#26a69a',
+      navbarBackgroundColor: '#122211',
+      navbarTextColor: '#fff',
+      navbarIconColor: '#729'
     },
     templates: [
       {
@@ -125,6 +128,21 @@ var defaultConfig = {
         events: [{
           name: "DeleteItem"
         }]
+      }, {
+        name: "json-view",
+        template: "<q-page>\n" +
+          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"localData && localData.title\">\n" +
+          "      <q-toolbar-title>{{localData.title}}</q-toolbar-title>\n" +
+          "    </q-toolbar>\n" +
+          "\n" +
+          "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
+          "\n" +
+          "      {{localData}}\n" +
+          "    </div>\n" +
+          "  </q-page>",
+        style: "",
+        variables: ["reference_id"],
+        events: []
       },
       {
         name: "home-view",
@@ -133,6 +151,7 @@ var defaultConfig = {
           "    \n" +
           "    <q-input label='Mobile number' v-model=\"vars.mobile_number\"></q-input>\n" +
           "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
+          "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'untest', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
           "    \n" +
           "    <table>\n" +
           "        <tr v-for=\"row in localData\" >\n" +
@@ -152,6 +171,10 @@ var defaultConfig = {
           },
           {
             name: 'test',
+            type: "SingleRow"
+          },
+          {
+            name: 'untest',
             type: "SingleRow"
           }
         ]
@@ -415,6 +438,8 @@ var defaultConfig = {
 const token = LocalStorage.getItem("token");
 var state = JSON.parse(appConfig || JSON.stringify(defaultConfig));
 
+delete state.user;
+
 
 if (!daptinClient.appConfig.endpoint && state.appLayout.endpoint) {
   console.log("setting daptin end point and refreshing ")
@@ -433,7 +458,7 @@ if (token) {
 
 
 export default function createStore() {
-  daptinClient.worldManager.loadModels();
+  // daptinClient.worldManager.loadModels();
   console.log("Store created");
   return new Vuex.Store({
     state: state,
