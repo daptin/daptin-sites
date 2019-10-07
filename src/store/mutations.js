@@ -39,6 +39,10 @@ export default {
   SET_USER: (state, user) => {
     state.user = user;
   },
+  SET_CHIEF_USER: (state, user) => {
+    console.log("set chief user", user);
+    state.chiefUser = user;
+  },
   SET_LOCAL_DATA: (state, data) => {
     state.localData = data;
   },

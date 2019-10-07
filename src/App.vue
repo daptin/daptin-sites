@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app" v-touch-hold:3500.mouse="setEndpoint">
+  <div id="q-app" v-touch-hold:1500.mouse="setEndpoint">
     <router-view/>
 
     <q-dialog v-model="newEndpointDialog" persistent>
@@ -122,6 +122,7 @@
       updateEndpoint() {
         console.log("update endpoint", this.appLayout.endpoint)
         localStorage.setItem("DAPTIN_ENDPOINT", this.appLayout.endpoint);
+        this.saveConfig();
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         window.location = window.location + "";

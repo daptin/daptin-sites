@@ -27,6 +27,9 @@ export default {
   user(state) {
     return state.user;
   },
+  chiefUser(state) {
+    return state.chiefUser;
+  },
   appLayout(state) {
     return state.appLayout;
   },
