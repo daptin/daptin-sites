@@ -110,6 +110,7 @@
       loginChief() {
         const that = this;
         console.log("login chief", this.chiefUsername, this.chiefPassword);
+        const daptinInstanceToken = this.appLayout.token;
         this.loginSimplyUser({
           'email': this.chiefUsername,
           'password': this.chiefPassword,
@@ -117,8 +118,13 @@
           console.log("Chief login complete", response)
           if (that.chiefUser) {
             that.chiefUserLoginDialog = false;
+            if (!daptinInstanceToken) {
+              that.$router.push("/login")
+            } else {
+              that.appLayout.token = daptinInstanceToken;
+              that.saveConfig();
+            }
           }
-          that.$router.push("/login")
         }).catch(function (e) {
           console.log("Chief login failed", e)
         })

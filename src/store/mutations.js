@@ -42,6 +42,7 @@ export default {
   SET_CHIEF_USER: (state, user) => {
     console.log("set chief user", user);
     state.chiefUser = user;
+    localStorage.setItem("config", JSON.stringify(state))
   },
   SET_LOCAL_DATA: (state, data) => {
     state.localData = data;
