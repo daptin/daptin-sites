@@ -10,9 +10,19 @@ const routes = [
     component: () => import("layouts/MakerLayout.vue"),
     children: [
       {
+        path: '',
+        name: "Maker Home",
+        component: () => import("pages/maker/AppSettings.vue")
+      },
+      {
         path: 'settings',
         name: "App Settings",
         component: () => import("pages/maker/AppSettings.vue")
+      },
+      {
+        path: 'layout',
+        name: "App Layout",
+        component: () => import("pages/maker/ChooseLayout.vue")
       },
       {
         path: 'screens',
@@ -52,7 +62,7 @@ const routes = [
   {
     path: "/experiment3",
     component: () => import("layouts/SearchIconBotTabLayout.vue")
-  }, 
+  },
   {
     path: "/experiment4",
     component: () => import("layouts/IconTopTabSearchLayout.vue")

@@ -118,6 +118,7 @@
           if (that.chiefUser) {
             that.chiefUserLoginDialog = false;
           }
+          that.$router.push("/login")
         }).catch(function (e) {
           console.log("Chief login failed", e)
         })

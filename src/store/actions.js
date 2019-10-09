@@ -5,13 +5,11 @@ import Mustache from 'mustache';
 
 export default {
   setLayout: ({commit, state}, layout) => {
-
     console.log("set layout called", layout);
     if (!layout) {
       layout = state.appLayout.homeLayout;
     }
     commit("SET_LAYOUT", state.appLayout.layoutConfiguration[layout]);
-
   },
   setVar: ({commit, state}, params) => {
     commit("SET_VAR", params)
@@ -312,7 +310,7 @@ export default {
           }
           const finalParams = {...state.currentLayout.params, ...params};
 
-          daptinClient.worldManager.loadModel(state.currentLayout.item).then(function(){
+          daptinClient.worldManager.loadModel(state.currentLayout.item).then(function () {
             daptinClient.jsonApi.findAll(state.currentLayout.item, finalParams).then(function (res) {
               console.log("loaded data", res);
               const data = res.data;

@@ -1,8 +1,6 @@
 <template>
-  <q-page>
-    <component v-if="layout" v-bind:vars="vars" v-bind:localData="localData" v-bind:layout="layout"
-               v-bind:is="layout.template"></component>
-  </q-page>
+  <component v-if="layout" v-bind:vars="vars" v-bind:localData="localData" v-bind:layout="layout"
+             v-bind:is="layout.template"></component>
 </template>
 
 <style></style>

@@ -29,11 +29,6 @@
   import {colors} from 'quasar';
   import Vue from 'vue';
 
-
-  function test() {
-    console.log("afsef test")
-  }
-
   export default {
     computed: {
       ...mapGetters([
@@ -53,6 +48,65 @@
       colors.setBrand('primary', this.appLayout.style.primary);
       colors.setBrand('secondary', this.appLayout.style.secondary);
 
+      for (var i = 0; i < this.appLayout.containerLayouts.length; i++) {
+        let template = this.appLayout.containerLayouts[i];
+        if (!template.style) {
+          template.style = "";
+        }
+
+        (function (t) {
+          console.log("register layout ", t)
+          Vue.component(t.name, function (resolve, reject) {
+            resolve({
+              template: t.template,
+              props: ['localData', 'layout'],
+              data: function () {
+                return {
+                  styleTag: null,
+                }
+              },
+              computed: {
+                ...mapGetters(["appLayout", "vars"]),
+              },
+              methods: {
+                itemSingleClick: function (row, i) {
+                  // console.log("single item clicked", arguments)
+                  // this.$emit("item-single-clicked", row, i)
+                },
+                ...mapActions(['fireEvent', 'setVar'])
+              },
+              beforeDestroy: function () {
+                console.log("destroying template", t);
+                if (this.styleTag) {
+                  this.styleTag.remove()
+                }
+              },
+              mounted: function () {
+                console.log("mounted layout: ", t, this.appLayout);
+
+                if (!this.vars) {
+                  this.vars = {}
+                }
+                if (t.style) {
+                  const css = t.style,
+                    head = document.head || document.getElementsByTagName('head')[0],
+                    style = document.createElement('style');
+
+                  head.appendChild(style);
+
+                  style.type = 'text/css';
+                  style.appendChild(document.createTextNode(css));
+                  this.styleTag = style;
+                }
+              }
+            })
+          })
+        })(template)
+
+
+      }
+
+
       for (var i = 0; i < this.appLayout.templates.length; i++) {
         let template = this.appLayout.templates[i];
         if (!template.style) {
@@ -64,11 +118,14 @@
           Vue.component(t.name, function (resolve, reject) {
             resolve({
               template: t.template,
-              props: ['localData', 'layout', 'vars'],
+              props: ['localData', 'layout'],
               data: function () {
                 return {
                   styleTag: null,
                 }
+              },
+              computed: {
+                ...mapGetters(["vars"])
               },
               methods: {
                 itemSingleClick: function (row, i) {
@@ -89,8 +146,6 @@
                 if (!this.vars) {
                   this.vars = {}
                 }
-
-                test()
                 if (t.style) {
                   const css = t.style,
                     head = document.head || document.getElementsByTagName('head')[0],

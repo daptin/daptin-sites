@@ -40,6 +40,37 @@ var defaultConfig = {
       navbarTextColor: '#fff',
       navbarIconColor: '#729'
     },
+    layout: "bottom-nav-bar",
+    containerLayouts: [
+      {
+        name: "bottom-nav-bar",
+        template: "<q-layout view=\"lHh Lpr lFf\">\n" +
+          "    <q-page-container>\n" +
+          "      <router-view/>\n" +
+          "    </q-page-container>\n" +
+          "    <q-footer :color=\"appLayout.style.navbarBackgroundColor\">\n" +
+          "      <q-tabs inline-label :style=\"{'color': appLayout.style.navbarTextColor}\">\n" +
+          "        <q-tab v-for=\"tab in appLayout.tabs\" :key=\"tab.name\" @click=\"setTab(tab)\" :name=\"tab.name\" :icon=\"tab.icon\"\n" +
+          "               :label=\"tab.label\"/>\n" +
+          "      </q-tabs>\n" +
+          "    </q-footer>\n" +
+          "  </q-layout>"
+      },
+      {
+        name: "top-nav-bar",
+        template: "<q-layout view=\"lHh Lpr lFf\">" +
+          "    <q-header :color=\"appLayout.style.navbarBackgroundColor\">\n" +
+          "      <q-tabs inline-label :style=\"{'color': appLayout.style.navbarTextColor}\">\n" +
+          "        <q-tab v-for=\"tab in appLayout.tabs\" :key=\"tab.name\" @click=\"setTab(tab)\" :name=\"tab.name\" :icon=\"tab.icon\"\n" +
+          "               :label=\"tab.label\"/>\n" +
+          "      </q-tabs>\n" +
+          "    </q-header>\n" +
+          "    <q-page-container>\n" +
+          "      <router-view/>\n" +
+          "    </q-page-container>\n" +
+          "  </q-layout>"
+      },
+    ],
     templates: [
       {
         name: "card-view-1",

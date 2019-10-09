@@ -1,21 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-
-      <router-view/>
-      <!--
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-btn @click="make" fab icon="add" color="accent"/>
-      </q-page-sticky>
-      -->
-    </q-page-container>
-    <q-footer :color="appLayout.style.navbarBackgroundColor">
-      <q-tabs inline-label :style="{'color': appLayout.style.navbarTextColor}">
-        <q-tab v-for="tab in appLayout.tabs" :key="tab.name" @click="setTab(tab)" :name="tab.name" :icon="tab.icon"
-               :label="tab.label"/>
-      </q-tabs>
-    </q-footer>
-  </q-layout>
+  <component v-if="appLayout" v-bind:is="appLayout.layout"></component>
 </template>
 
 <script>
@@ -39,7 +23,6 @@
     methods: {
       openURL,
       make() {
-        console.log("goto make")
         this.$router.push("/make")
       },
       ...mapActions(['setLayout', 'refreshData']),
@@ -51,6 +34,7 @@
       }
     },
     mounted() {
+      console.log("requested app layout", this.appLayout.layout)
       if (!this.user) {
         this.$router.push("/")
       }
