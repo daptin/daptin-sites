@@ -48,7 +48,8 @@
     name: "MyLayout",
     data() {
       return {
-        leftDrawerOpen: this.$q.platform.is.desktop
+        left: '',
+        leftDrawerOpen: this.$q.platform.is.desktop,
       };
     },
     methods: {

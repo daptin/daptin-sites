@@ -114,6 +114,9 @@
       },
     },
     mounted() {
+      if (this.userModels.length  == 0) {
+        return;
+      }
       this.editorTab = this.userModels[0].table_name;
 
     },

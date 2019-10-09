@@ -43,19 +43,23 @@ const routes = [
   },
   {
     path: "/experiment1",
-    component: () => import("pages/IconTabLayout.vue")
+    component: () => import("layouts/IconBotTabLayout.vue")
   },
   {
     path: "/experiment2",
-    component: () => import("pages/IconLabelLayout.vue")
+    component: () => import("layouts/LabelBotTabLayout.vue")
   },
   {
     path: "/experiment3",
-    component: () => import("pages/IconTabLayoutSearch.vue")
-  },
+    component: () => import("layouts/SearchIconBotTabLayout.vue")
+  }, 
   {
     path: "/experiment4",
-    component: () => import("pages/headerTabIcon.vue")
+    component: () => import("layouts/IconTopTabSearchLayout.vue")
+  },
+  {
+    path: "/experiment5",
+    component: () => import("layouts/LeftSideNavigationLayout.vue")
   },
   {
     path: "",
