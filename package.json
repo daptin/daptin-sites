@@ -10,7 +10,7 @@
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
     "build": "node node_modules/@quasar/app/bin/quasar build pwa",
-    "start": "node node_modules/@quasar/app/bin/quasar -m pwa",
+    "start": "node node_modules/@quasar/app/bin/quasar serve -m pwa",
     "dev": "node $NODE_DEBUG_OPTION node_modules/@quasar/app/bin/quasar dev -m pwa"
   },
   "dependencies": {
