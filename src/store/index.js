@@ -70,6 +70,97 @@ var defaultConfig = {
           "    </q-page-container>\n" +
           "  </q-layout>"
       },
+      {
+        name: "bot-icon-bar",
+        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
+        "    <q-page-container>\n"+
+        "      <router-view />\n"+
+        "    </q-page-container>\n"+
+        "    <q-footer>\n"+
+        "      <q-tabs class=\"text-white\">\n"+
+        "        <q-tab\n"+
+        "          v-for=\"tab in appLayout.tabs\"\n"+
+        "          :key=\"tab.name\"\n"+
+        "          @click=\"setTab(tab)\"\n"+
+        "          :name=\"tab.name\"\n"+
+        "          :icon=\"tab.icon\"\n"+
+        "        />\n"+
+        "      </q-tabs>\n"+
+        "    </q-footer>\n"+
+        "  </q-layout>"
+      },
+      {
+        name: "search-bot-icon-bar",
+        template: "<q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
+        "    <q-page-container>\n"+
+        "      <div class=\"q-pa-md\">\n"+
+        "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n"+
+        "          <template v-slot:prepend>\n"+
+        "            <q-icon name=\"search\" />\n"+
+        "          </template>\n"+
+        "        </q-input>\n"+
+        "      </div>\n"+
+        "      <router-view />\n"+
+        "    </q-page-container>\n"+
+        "    <q-footer>\n"+
+        "      <q-tabs class=\"text-white\">\n"+
+        "        <q-tab\n"+
+        "          v-for=\"tab in appLayout.tabs\"\n"+
+        "          :key=\"tab.name\"\n"+
+        "          @click=\"setTab(tab)\"\n"+
+        "          :name=\"tab.name\"\n"+
+        "          :icon=\"tab.icon\"\n"+
+        "        />\n"+
+        "      </q-tabs>\n"+
+        "    </q-footer>\n"+
+        "  </q-layout>"
+      },
+      {
+        name: "label-bot-bar",
+        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
+        "    <q-page-container>\n"+
+        "      <router-view />\n"+
+        "    </q-page-container>\n"+
+        "    <q-footer>\n"+
+        "      <q-tabs class=\"text-white\">\n"+
+        "        <q-tab\n"+
+        "          v-for=\"tab in appLayout.tabs\"\n"+
+        "          :key=\"tab.name\"\n"+
+        "          @click=\"setTab(tab)\"\n"+
+        "          :name=\"tab.name\"\n"+
+        "          :icon=\"tab.icon\"\n"+
+        "          :label=\"tab.label\"\n"+
+        "        />\n"+
+        "      </q-tabs>\n"+
+        "    </q-footer>\n"+
+        "  </q-layout>"
+      },
+      {
+        name: "search-icon-top-bar",
+        template:"  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
+        "    <q-header>\n"+
+        "      <q-tabs class=\"text-white\">\n"+
+        "        <q-tab\n"+
+        "          v-for=\"tab in appLayout.tabs\"\n"+
+        "          :key=\"tab.name\"\n"+
+        "          @click=\"setTab(tab)\"\n"+
+        "          :name=\"tab.name\"\n"+
+        "          :icon=\"tab.icon\"\n"+
+        "        />\n"+
+        "      </q-tabs>\n"+
+        "    </q-header>\n"+
+        "    <q-page-container>\n"+
+        "      <div class=\"q-pa-md\">\n"+
+        "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n"+
+        "          <template v-slot:prepend>\n"+
+        "            <q-icon name=\"search\" />\n"+
+        "          </template>\n"+
+        "        </q-input>\n"+
+        "      </div>\n"+
+        "      <router-view />\n"+
+        "    </q-page-container>\n"+
+        "  </q-layout>"
+      }
     ],
     templates: [
       {
