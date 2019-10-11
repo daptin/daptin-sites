@@ -20,7 +20,7 @@ export default {
   },
   SET_PATH: (state, path) => {
     state.path = path;
-    console.log("path set")
+    console.log("path set", path)
   },
   SAVE_CONFIG: (state) => {
     // console.log("storing config to localstorage", state.appLayout)

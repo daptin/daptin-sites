@@ -50,7 +50,8 @@ module.exports = function (ctx) {
 
     build: {
       env: {
-        DAPTIN_ENDPOINT: JSON.stringify(process.env.DAPTIN_ENDPOINT)
+        DAPTIN_ENDPOINT: JSON.stringify(process.env.DAPTIN_ENDPOINT),
+        CHIEF_ENDPOINT: JSON.stringify(process.env.CHIEF_ENDPOINT),
       },
       scopeHoisting: true,
       vueRouterMode: 'history',

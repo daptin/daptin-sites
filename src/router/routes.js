@@ -1,11 +1,5 @@
 const routes = [
   {
-    path: "/login",
-    component: () => import("layouts/GuestLayout.vue"),
-    children: [{path: "", component: () => import("pages/Login.vue")}]
-  },
-  {
-
     path: "/make",
     component: () => import("layouts/MakerLayout.vue"),
     children: [

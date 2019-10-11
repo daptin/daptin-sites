@@ -12,6 +12,8 @@ daptinClientSimply.worldManager.loadModel("user_account").then(function () {
   //   console.log("all todos", res.data)
   // })
 });
+// daptinClientSimply.worldManager.loadModel("layout");
+// daptinClientSimply.worldManager.loadModel("application");
 
 export default daptinClientSimply;
 

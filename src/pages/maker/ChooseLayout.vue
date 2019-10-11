@@ -8,7 +8,7 @@
             <div class="text-h6">{{layout.name}}</div>
           </q-card-section>
           <q-card-actions vertical>
-            <q-btn outline color="secondary" @click="setLayout(layout.name)">Select</q-btn>
+            <q-btn outline color="secondary" @click="setApplicationLayout(layout.name)">Select</q-btn>
           </q-card-actions>
         </q-card>
       </div>
@@ -41,7 +41,7 @@
         'invokeEvent',
         'refreshModels']
       ),
-      setLayout(layoutName) {
+        setApplicationLayout(layoutName) {
         this.appLayout.layout = layoutName;
         this.saveConfig();
         this.$router.push('/make/screens');

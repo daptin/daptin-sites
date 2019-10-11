@@ -35,9 +35,6 @@
     },
     mounted() {
       console.log("requested app layout", this.appLayout.layout)
-      if (!this.user) {
-        this.$router.push("/")
-      }
     }
   };
 </script>

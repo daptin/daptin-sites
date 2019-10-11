@@ -46,156 +46,36 @@ var defaultConfig = {
       navbarIconColor: '#729'
     },
     layout: "bottom-nav-bar",
-    containerLayouts: [
-      {
-        name: "bottom-nav-bar",
-        template: "<q-layout view=\"lHh Lpr lFf\">\n" +
-          "    <q-page-container>\n" +
-          "      <router-view/>\n" +
-          "    </q-page-container>\n" +
-          "    <q-footer :color=\"appLayout.style.navbarBackgroundColor\">\n" +
-          "      <q-tabs inline-label :style=\"{'color': appLayout.style.navbarTextColor}\">\n" +
-          "        <q-tab v-for=\"tab in appLayout.tabs\" :key=\"tab.name\" @click=\"setTab(tab)\" :name=\"tab.name\" :icon=\"tab.icon\"\n" +
-          "               :label=\"tab.label\"/>\n" +
-          "      </q-tabs>\n" +
-          "    </q-footer>\n" +
-          "  </q-layout>"
-      },
-      {
-        name: "top-nav-bar",
-        template: "<q-layout view=\"lHh Lpr lFf\">" +
-          "    <q-header :color=\"appLayout.style.navbarBackgroundColor\">\n" +
-          "      <q-tabs inline-label :style=\"{'color': appLayout.style.navbarTextColor}\">\n" +
-          "        <q-tab v-for=\"tab in appLayout.tabs\" :key=\"tab.name\" @click=\"setTab(tab)\" :name=\"tab.name\" :icon=\"tab.icon\"\n" +
-          "               :label=\"tab.label\"/>\n" +
-          "      </q-tabs>\n" +
-          "    </q-header>\n" +
-          "    <q-page-container>\n" +
-          "      <router-view/>\n" +
-          "    </q-page-container>\n" +
-          "  </q-layout>"
-      },
-      {
-        name: "bot-icon-bar",
-        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
-          "    <q-page-container>\n" +
-          "      <router-view />\n" +
-          "    </q-page-container>\n" +
-          "    <q-footer>\n" +
-          "      <q-tabs class=\"text-white\">\n" +
-          "        <q-tab\n" +
-          "          v-for=\"tab in appLayout.tabs\"\n" +
-          "          :key=\"tab.name\"\n" +
-          "          @click=\"setTab(tab)\"\n" +
-          "          :name=\"tab.name\"\n" +
-          "          :icon=\"tab.icon\"\n" +
-          "        />\n" +
-          "      </q-tabs>\n" +
-          "    </q-footer>\n" +
-          "  </q-layout>"
-      },
-      {
-        name: "search-bot-icon-bar",
-        template: "<q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
-          "    <q-page-container>\n" +
-          "      <div class=\"q-pa-md\">\n" +
-          "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n" +
-          "          <template v-slot:prepend>\n" +
-          "            <q-icon name=\"search\" />\n" +
-          "          </template>\n" +
-          "        </q-input>\n" +
-          "      </div>\n" +
-          "      <router-view />\n" +
-          "    </q-page-container>\n" +
-          "    <q-footer>\n" +
-          "      <q-tabs class=\"text-white\">\n" +
-          "        <q-tab\n" +
-          "          v-for=\"tab in appLayout.tabs\"\n" +
-          "          :key=\"tab.name\"\n" +
-          "          @click=\"setTab(tab)\"\n" +
-          "          :name=\"tab.name\"\n" +
-          "          :icon=\"tab.icon\"\n" +
-          "        />\n" +
-          "      </q-tabs>\n" +
-          "    </q-footer>\n" +
-          "  </q-layout>"
-      },
-      {
-        name: "label-bot-bar",
-        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
-          "    <q-page-container>\n" +
-          "      <router-view />\n" +
-          "    </q-page-container>\n" +
-          "    <q-footer>\n" +
-          "      <q-tabs class=\"text-white\">\n" +
-          "        <q-tab\n" +
-          "          v-for=\"tab in appLayout.tabs\"\n" +
-          "          :key=\"tab.name\"\n" +
-          "          @click=\"setTab(tab)\"\n" +
-          "          :name=\"tab.name\"\n" +
-          "          :icon=\"tab.icon\"\n" +
-          "          :label=\"tab.label\"\n" +
-          "        />\n" +
-          "      </q-tabs>\n" +
-          "    </q-footer>\n" +
-          "  </q-layout>"
-      },
-      {
-        name: "search-icon-top-bar",
-        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
-          "    <q-header>\n" +
-          "      <q-tabs class=\"text-white\">\n" +
-          "        <q-tab\n" +
-          "          v-for=\"tab in appLayout.tabs\"\n" +
-          "          :key=\"tab.name\"\n" +
-          "          @click=\"setTab(tab)\"\n" +
-          "          :name=\"tab.name\"\n" +
-          "          :icon=\"tab.icon\"\n" +
-          "        />\n" +
-          "      </q-tabs>\n" +
-          "    </q-header>\n" +
-          "    <q-page-container>\n" +
-          "      <div class=\"q-pa-md\">\n" +
-          "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n" +
-          "          <template v-slot:prepend>\n" +
-          "            <q-icon name=\"search\" />\n" +
-          "          </template>\n" +
-          "        </q-input>\n" +
-          "      </div>\n" +
-          "      <router-view />\n" +
-          "    </q-page-container>\n" +
-          "  </q-layout>"
-      }
-    ],
+    containerLayouts: [],
     templates: [
       {
         name: "card-view-1",
-        template: "<q-page>\n" +
-          "\n" +
-          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"layout && layout.title\">\n" +
-          "      <q-toolbar-title>{{layout.title}}</q-toolbar-title>\n" +
-          "    </q-toolbar>\n" +
-          "\n" +
-          "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
-          "      <template v-for=\"(row, i) in localData\">\n" +
-          "        <q-card class=\"my-card\" :key=\"row.key\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index': i, 'params': row})\">\n" +
-          "\n" +
-          "          <q-avatar color=\"grey\" text-color=\"white\">\n" +
-          "            {{ row.avatar }}\n" +
-          "          </q-avatar>\n" +
-          "\n" +
-          "          <q-card-section>\n" +
-          "            <q-item-label>{{row.title}}</q-item-label>\n" +
-          "            <q-item-label caption lines=\"2\">{{row.description}}</q-item-label>\n" +
-          "          </q-card-section>\n" +
-          "\n" +
-          "          <q-card-section>\n" +
-          "            <q-item-label caption>{{row.created_at}}</q-item-label>\n" +
-          "          </q-card-section>\n" +
-          "        </q-card>\n" +
-          "      </template>\n" +
-          "    </div>\n" +
-          "  </q-page>",
+        template: `<q-page>
+
+    <q-toolbar class="bg-primary text-white shadow-2" v-if="layout && layout.title">
+      <q-toolbar-title>{{layout.title}}</q-toolbar-title>
+    </q-toolbar>
+
+    <div class="q-pa-md row items-start q-gutter-md">
+      <template v-for="(row, i) in localData">
+        <q-card class="my-card" :key="row.key" @click.native="fireEvent({'name': 'ItemSingleClick', 'index': i, 'params': row})">
+
+          <q-avatar color="grey" text-color="white">
+            {{ row.avatar }}
+          </q-avatar>
+
+          <q-card-section>
+            <q-item-label>{{row.title}}</q-item-label>
+            <q-item-label caption lines="2">{{row.description}}</q-item-label>
+          </q-card-section>
+
+          <q-card-section>
+            <q-item-label caption>{{row.created_at}}</q-item-label>
+          </q-card-section>
+        </q-card>
+      </template>
+    </div>
+  </q-page>`,
         variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
         events: [{
           name: "ItemSingleClick",
@@ -204,36 +84,36 @@ var defaultConfig = {
       },
       {
         name: "list-view-1",
-        template: "<q-page>\n" +
-          "\n" +
-          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"layout && layout.title\">\n" +
-          "      <q-toolbar-title>{{layout.title}}</q-toolbar-title>\n" +
-          "    </q-toolbar>\n" +
-          "\n" +
-          "    <q-list style=\"background: white\">\n" +
-          "      <template v-for=\"(row, index) in localData\">\n" +
-          "        <q-item :key=\"index\" @click.native=\"fireEvent({'name': 'ItemSingleClick', 'index':index, 'params': row})\">\n" +
-          "\n" +
-          "          <q-item-section avatar>\n" +
-          "            <q-avatar color=\"grey\" text-color=\"white\">\n" +
-          "              {{ row.avatar }}\n" +
-          "            </q-avatar>\n" +
-          "          </q-item-section>\n" +
-          "\n" +
-          "          <q-item-section>\n" +
-          "            <q-item-label>{{row.title}}</q-item-label>\n" +
-          "            <q-item-label caption lines=\"2\">{{row.description}}</q-item-label>\n" +
-          "          </q-item-section>\n" +
-          "\n" +
-          "          <q-item-section side top>\n" +
-          "            <q-item-label caption>{{row.created_at}}</q-item-label>\n" +
-          "          </q-item-section>\n" +
-          "        </q-item>\n" +
-          "        <q-separator spaced inset :key=\"'sep_' + row.key\" v-if=\"index < localData.length - 1\"/>\n" +
-          "      </template>\n" +
-          "    </q-list>\n" +
-          "\n" +
-          "  </q-page>",
+        template: `<q-page>
+
+    <q-toolbar class="bg-primary text-white shadow-2" v-if="layout && layout.title">
+      <q-toolbar-title>{{layout.title}}</q-toolbar-title>
+    </q-toolbar>
+
+    <q-list style="background: white">
+      <template v-for="(row, index) in localData">
+        <q-item :key="index" @click.native="fireEvent({'name': 'ItemSingleClick', 'index':index, 'params': row})">
+
+          <q-item-section avatar>
+            <q-avatar color="grey" text-color="white">
+              {{ row.avatar }}
+            </q-avatar>
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>{{row.title}}</q-item-label>
+            <q-item-label caption lines="2">{{row.description}}</q-item-label>
+          </q-item-section>
+
+          <q-item-section side top>
+            <q-item-label caption>{{row.created_at}}</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator spaced inset :key="'sep_' + row.key" v-if="index < localData.length - 1"/>
+      </template>
+    </q-list>
+
+  </q-page>`,
         variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
         events: [{
           name: "ItemSingleClick",
@@ -242,16 +122,16 @@ var defaultConfig = {
       },
       {
         name: "another-form-view-1",
-        template: "<q-page>\n" +
-          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"localData && localData.title\">\n" +
-          "      <q-toolbar-title>{{localData.title}}</q-toolbar-title>\n" +
-          "    </q-toolbar>\n" +
-          "\n" +
-          "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
-          "\n" +
-          "      {{localData}}\n" +
-          "    </div>\n" +
-          "  </q-page>",
+        template: `<q-page>
+    <q-toolbar class="bg-primary text-white shadow-2" v-if="localData && localData.title">
+      <q-toolbar-title>{{localData.title}}</q-toolbar-title>
+    </q-toolbar>
+
+    <div class="q-pa-md row items-start q-gutter-md">
+
+      {{localData}}
+    </div>
+  </q-page>`,
         style: "",
         variables: ["title"],
         events: [{
@@ -259,39 +139,39 @@ var defaultConfig = {
         }]
       }, {
         name: "json-view",
-        template: "<q-page>\n" +
-          "    <q-toolbar class=\"bg-primary text-white shadow-2\" v-if=\"localData && localData.title\">\n" +
-          "      <q-toolbar-title>{{localData.title}}</q-toolbar-title>\n" +
-          "    </q-toolbar>\n" +
-          "\n" +
-          "    <div class=\"q-pa-md row items-start q-gutter-md\">\n" +
-          "\n" +
-          "      {{localData}}\n" +
-          "    </div>\n" +
-          "  </q-page>",
+        template: `<q-page>
+    <q-toolbar class="bg-primary text-white shadow-2" v-if="localData && localData.title">
+      <q-toolbar-title>{{localData.title}}</q-toolbar-title>
+    </q-toolbar>
+
+    <div class="q-pa-md row items-start q-gutter-md">
+
+      {{localData}}
+    </div>
+  </q-page>`,
         style: "",
         variables: ["reference_id"],
         events: []
       },
       {
         name: "home-view",
-        template: "<div>\n" +
-          "    Hello home\n" +
-          "    \n" +
-          "    <q-input label='Mobile number' v-model=\"vars.mobile_number\"></q-input>\n" +
-          "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
-          "    <q-btn label=\"Send Otp\"  @click=\"fireEvent({name: 'untest', params: {mobile_number: vars.mobile_number}})\"></q-btn>\n" +
-          "    \n" +
-          "    <table>\n" +
-          "        <tr v-for=\"row in localData\" >\n" +
-          "           <td> {{row.title}}</td>\n" +
-          "           <td>\n" +
-          "               <q-btn @click=\"fireEvent({name: 'deleteThisAction', params: row})\" label=\"Delete\"></q-btn>\n" +
-          "           </td>\n" +
-          "        </tr>\n" +
-          "    </table>\n" +
-          "    \n" +
-          "</div>",
+        template: `<div>
+    Hello home
+    
+    <q-input label='Mobile number' v-model="vars.mobile_number"></q-input>
+    <q-btn label="Send Otp"  @click="fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})"></q-btn>
+    <q-btn label="Send Otp"  @click="fireEvent({name: 'untest', params: {mobile_number: vars.mobile_number}})"></q-btn>
+    
+    <table>
+        <tr v-for="row in localData" >
+           <td> {{row.title}}</td>
+           <td>
+               <q-btn @click="fireEvent({name: 'deleteThisAction', params: row})" label="Delete"></q-btn>
+           </td>
+        </tr>
+    </table>
+    
+</div>`,
         variables: ["title", "reference_id"],
         events: [
           {

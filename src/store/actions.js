@@ -2,7 +2,7 @@ import daptinClient from '../api'
 import daptinClientSimply from '../simplyapi'
 import {DataTransform} from "node-json-transform" ;
 import Mustache from 'mustache';
-
+import router from '../router'
 export default {
   setLayout: ({commit, state}, layout) => {
     console.log("set layout called", layout);
@@ -86,6 +86,11 @@ export default {
       }
     }
   },
+  setTab({commit, state}, tab) {
+    // router().push(tab.path)
+    commit("SET_PATH", tab.path.split("/")[1])
+    // this.refreshData(this.$route.params.referenceId)
+  },
   setPagination: ({commit, state}, params) => {
     commit("SET_PAGINATION", params)
     // commit("")
@@ -99,6 +104,8 @@ export default {
     }
 
 
+    let tableName = actionConfig.params.table_name;
+    delete actionConfig.params.table_name;
     switch (actionConfig.type) {
       case "relocate":
         const path = Mustache.render(actionConfig.params.path, actionConfig.params);
@@ -127,16 +134,16 @@ export default {
 
       case "put":
         console.log("put request", actionConfig)
-        return daptinClientSimply.jsonApi.update(actionConfig.params.table_name, actionConfig.params)
+        return daptinClientSimply.jsonApi.update(tableName, actionConfig.params)
 
       case "delete":
-        return daptinClientSimply.jsonApi.destroy(actionConfig.params.table_name, actionConfig.params)
+        return daptinClientSimply.jsonApi.destroy(tableName, actionConfig.params)
 
       case "post":
-        return daptinClientSimply.jsonApi.create(actionConfig.params.table_name, actionConfig.params)
+        return daptinClientSimply.jsonApi.create(tableName, actionConfig.params)
 
       case "get":
-        return daptinClientSimply.jsonApi.findAll(actionConfig.params.table_name, actionConfig.params)
+        return daptinClientSimply.jsonApi.findAll(tableName, actionConfig.params)
 
     }
 
