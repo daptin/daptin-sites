@@ -76,6 +76,9 @@ export default {
       })
     })
   },
+  setDaptinToken: ({commit, state}, token) => {
+    commit("SET_DAPTIN_TOKEN", token)
+  },
   setTemplate: ({commit, state}, template) => {
     for (var i = 0; i < state.appLayout.templates.length; i++) {
       if (state.appLayout.templates[i].name == template.name) {

@@ -11,7 +11,12 @@ Vue.use(Vuex);
 let appConfig = LocalStorage.getItem("config");
 console.log("Daptin client config endpoint", daptinClient.appConfig.endpoint);
 
+if (appConfig && appConfig.appLayout) {
+  appConfig.appLayout.endpoint = daptinClient.appConfig.getEndpoint();
+}
+
 var defaultConfig = {
+  applicationId: null,
   user: null,
   chiefUser: null,
   token: null,
@@ -72,94 +77,94 @@ var defaultConfig = {
       },
       {
         name: "bot-icon-bar",
-        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
-        "    <q-page-container>\n"+
-        "      <router-view />\n"+
-        "    </q-page-container>\n"+
-        "    <q-footer>\n"+
-        "      <q-tabs class=\"text-white\">\n"+
-        "        <q-tab\n"+
-        "          v-for=\"tab in appLayout.tabs\"\n"+
-        "          :key=\"tab.name\"\n"+
-        "          @click=\"setTab(tab)\"\n"+
-        "          :name=\"tab.name\"\n"+
-        "          :icon=\"tab.icon\"\n"+
-        "        />\n"+
-        "      </q-tabs>\n"+
-        "    </q-footer>\n"+
-        "  </q-layout>"
+        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
+          "    <q-page-container>\n" +
+          "      <router-view />\n" +
+          "    </q-page-container>\n" +
+          "    <q-footer>\n" +
+          "      <q-tabs class=\"text-white\">\n" +
+          "        <q-tab\n" +
+          "          v-for=\"tab in appLayout.tabs\"\n" +
+          "          :key=\"tab.name\"\n" +
+          "          @click=\"setTab(tab)\"\n" +
+          "          :name=\"tab.name\"\n" +
+          "          :icon=\"tab.icon\"\n" +
+          "        />\n" +
+          "      </q-tabs>\n" +
+          "    </q-footer>\n" +
+          "  </q-layout>"
       },
       {
         name: "search-bot-icon-bar",
-        template: "<q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
-        "    <q-page-container>\n"+
-        "      <div class=\"q-pa-md\">\n"+
-        "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n"+
-        "          <template v-slot:prepend>\n"+
-        "            <q-icon name=\"search\" />\n"+
-        "          </template>\n"+
-        "        </q-input>\n"+
-        "      </div>\n"+
-        "      <router-view />\n"+
-        "    </q-page-container>\n"+
-        "    <q-footer>\n"+
-        "      <q-tabs class=\"text-white\">\n"+
-        "        <q-tab\n"+
-        "          v-for=\"tab in appLayout.tabs\"\n"+
-        "          :key=\"tab.name\"\n"+
-        "          @click=\"setTab(tab)\"\n"+
-        "          :name=\"tab.name\"\n"+
-        "          :icon=\"tab.icon\"\n"+
-        "        />\n"+
-        "      </q-tabs>\n"+
-        "    </q-footer>\n"+
-        "  </q-layout>"
+        template: "<q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
+          "    <q-page-container>\n" +
+          "      <div class=\"q-pa-md\">\n" +
+          "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n" +
+          "          <template v-slot:prepend>\n" +
+          "            <q-icon name=\"search\" />\n" +
+          "          </template>\n" +
+          "        </q-input>\n" +
+          "      </div>\n" +
+          "      <router-view />\n" +
+          "    </q-page-container>\n" +
+          "    <q-footer>\n" +
+          "      <q-tabs class=\"text-white\">\n" +
+          "        <q-tab\n" +
+          "          v-for=\"tab in appLayout.tabs\"\n" +
+          "          :key=\"tab.name\"\n" +
+          "          @click=\"setTab(tab)\"\n" +
+          "          :name=\"tab.name\"\n" +
+          "          :icon=\"tab.icon\"\n" +
+          "        />\n" +
+          "      </q-tabs>\n" +
+          "    </q-footer>\n" +
+          "  </q-layout>"
       },
       {
         name: "label-bot-bar",
-        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
-        "    <q-page-container>\n"+
-        "      <router-view />\n"+
-        "    </q-page-container>\n"+
-        "    <q-footer>\n"+
-        "      <q-tabs class=\"text-white\">\n"+
-        "        <q-tab\n"+
-        "          v-for=\"tab in appLayout.tabs\"\n"+
-        "          :key=\"tab.name\"\n"+
-        "          @click=\"setTab(tab)\"\n"+
-        "          :name=\"tab.name\"\n"+
-        "          :icon=\"tab.icon\"\n"+
-        "          :label=\"tab.label\"\n"+
-        "        />\n"+
-        "      </q-tabs>\n"+
-        "    </q-footer>\n"+
-        "  </q-layout>"
+        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
+          "    <q-page-container>\n" +
+          "      <router-view />\n" +
+          "    </q-page-container>\n" +
+          "    <q-footer>\n" +
+          "      <q-tabs class=\"text-white\">\n" +
+          "        <q-tab\n" +
+          "          v-for=\"tab in appLayout.tabs\"\n" +
+          "          :key=\"tab.name\"\n" +
+          "          @click=\"setTab(tab)\"\n" +
+          "          :name=\"tab.name\"\n" +
+          "          :icon=\"tab.icon\"\n" +
+          "          :label=\"tab.label\"\n" +
+          "        />\n" +
+          "      </q-tabs>\n" +
+          "    </q-footer>\n" +
+          "  </q-layout>"
       },
       {
         name: "search-icon-top-bar",
-        template:"  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n"+
-        "    <q-header>\n"+
-        "      <q-tabs class=\"text-white\">\n"+
-        "        <q-tab\n"+
-        "          v-for=\"tab in appLayout.tabs\"\n"+
-        "          :key=\"tab.name\"\n"+
-        "          @click=\"setTab(tab)\"\n"+
-        "          :name=\"tab.name\"\n"+
-        "          :icon=\"tab.icon\"\n"+
-        "        />\n"+
-        "      </q-tabs>\n"+
-        "    </q-header>\n"+
-        "    <q-page-container>\n"+
-        "      <div class=\"q-pa-md\">\n"+
-        "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n"+
-        "          <template v-slot:prepend>\n"+
-        "            <q-icon name=\"search\" />\n"+
-        "          </template>\n"+
-        "        </q-input>\n"+
-        "      </div>\n"+
-        "      <router-view />\n"+
-        "    </q-page-container>\n"+
-        "  </q-layout>"
+        template: "  <q-layout view=\"lHh Lpr lFf\" :style=\"{background: appLayout.style.background}\">\n" +
+          "    <q-header>\n" +
+          "      <q-tabs class=\"text-white\">\n" +
+          "        <q-tab\n" +
+          "          v-for=\"tab in appLayout.tabs\"\n" +
+          "          :key=\"tab.name\"\n" +
+          "          @click=\"setTab(tab)\"\n" +
+          "          :name=\"tab.name\"\n" +
+          "          :icon=\"tab.icon\"\n" +
+          "        />\n" +
+          "      </q-tabs>\n" +
+          "    </q-header>\n" +
+          "    <q-page-container>\n" +
+          "      <div class=\"q-pa-md\">\n" +
+          "        <q-input rounded outlined v-model=\"search\" type=\"search\">\n" +
+          "          <template v-slot:prepend>\n" +
+          "            <q-icon name=\"search\" />\n" +
+          "          </template>\n" +
+          "        </q-input>\n" +
+          "      </div>\n" +
+          "      <router-view />\n" +
+          "    </q-page-container>\n" +
+          "  </q-layout>"
       }
     ],
     templates: [
@@ -561,9 +566,6 @@ var defaultConfig = {
 
 const token = LocalStorage.getItem("token");
 var state = JSON.parse(appConfig || JSON.stringify(defaultConfig));
-
-delete state.user;
-
 
 if (!daptinClient.appConfig.endpoint && state.appLayout.endpoint) {
   console.log("setting daptin end point and refreshing ")

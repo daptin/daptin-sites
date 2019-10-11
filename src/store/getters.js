@@ -25,6 +25,7 @@ export default {
     return state.serverActions
   },
   user(state) {
+    console.log("get daptin user", state.user)
     return state.user;
   },
   chiefUser(state) {

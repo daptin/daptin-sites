@@ -62,6 +62,23 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="daptinUserLoginDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Login to your Daptin instance</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input label="Email" dense v-model="daptinUsername" autofocus @keyup.enter="prompt = false"/>
+          <q-input label="Password" dense v-model="daptinPassword" type="password" autofocus
+                   @keyup.enter="prompt = false"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Login" @click="loginDaptin()"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
 
   </q-layout>
@@ -98,19 +115,25 @@
         tab: null,
         screens: [],
         chiefUsername: null,
+        daptinUsername: null,
         chiefPassword: null,
+        daptinPassword: null,
         showMapping: true,
         chiefUserLoginDialog: false,
+        daptinUserLoginDialog: false,
         layouts: [],
         left: true,
         screenHistoryStack: []
       };
     },
     methods: {
+      loginDaptin() {
+
+      },
       loginChief() {
         const that = this;
         console.log("login chief", this.chiefUsername, this.chiefPassword);
-        const daptinInstanceToken = this.appLayout.token;
+        const daptinInstanceToken = this.user;
         this.loginSimplyUser({
           'email': this.chiefUsername,
           'password': this.chiefPassword,
@@ -119,9 +142,9 @@
           if (that.chiefUser) {
             that.chiefUserLoginDialog = false;
             if (!daptinInstanceToken) {
-              that.$router.push("/login")
+              that.daptinUserLoginDialog = true;
             } else {
-              that.appLayout.token = daptinInstanceToken;
+              that.setDaptinToken(daptinInstanceToken)
               that.saveConfig();
             }
           }
@@ -130,32 +153,30 @@
         })
       },
       ...mapActions([
-        'setLayout',
-        'getData',
-        'saveConfig',
-        'setTemplate',
-        'loginSimplyUser',
-        'addLayout',
-        'addNewTab',
-        'createTemplate',
-        'refreshActions',
-        'invokeEvent',
-        'invokeChiefEvent',
-        'refreshModels']
+          'setLayout',
+          'getData',
+          'saveConfig',
+          'setDaptinToken',
+          'setTemplate',
+          'loginSimplyUser',
+          'addLayout',
+          'addNewTab',
+          'createTemplate',
+          'refreshActions',
+          'invokeEvent',
+          'invokeChiefEvent',
+          'refreshModels'
+        ]
       ),
     },
     mounted() {
       this.refreshModels();
       this.refreshActions();
-      if (!this.user) {
-        this.$router.push("/")
-      }
 
-      console.log("Chief user: ", this.chiefUser);
       if (!this.chiefUser) {
         this.chiefUserLoginDialog = true;
+        return;
       } else {
-
         this.invokeChiefEvent({
           type: "get",
           params: {
@@ -166,6 +187,14 @@
         })
 
       }
+
+      if (!this.user) {
+        this.daptinUserLoginDialog = true;
+        return;
+      }
+
+      console.log("Chief user: ", this.chiefUser);
+
       this.saveConfig()
 
     },

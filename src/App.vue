@@ -69,10 +69,6 @@
                 ...mapGetters(["appLayout", "vars"]),
               },
               methods: {
-                itemSingleClick: function (row, i) {
-                  // console.log("single item clicked", arguments)
-                  // this.$emit("item-single-clicked", row, i)
-                },
                 ...mapActions(['fireEvent', 'setVar'])
               },
               beforeDestroy: function () {

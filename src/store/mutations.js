@@ -26,6 +26,11 @@ export default {
     // console.log("storing config to localstorage", state.appLayout)
     localStorage.setItem("config", JSON.stringify(state))
   },
+  SET_DAPTIN_TOKEN: (state, token) => {
+    localStorage.setItem("token", token);
+    // state.user = token;
+    // state.token = token;
+  },
   SET_VAR: (state, params) => {
     state.vars[params.key] = params.value;
   },
