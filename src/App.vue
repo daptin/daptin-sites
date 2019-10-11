@@ -1,7 +1,6 @@
 <template>
-  <div id="q-app" v-touch-hold:1500.mouse="setEndpoint">
+  <div style="width: 100vw; height: 100vh" id="q-app" v-touch-hold:1500.mouse="setEndpoint">
     <router-view/>
-
     <q-dialog v-model="newEndpointDialog" persistent>
       <q-card style="min-width: 400px">
         <q-card-section>
@@ -28,7 +27,6 @@
     import {mapGetters, mapActions, mapState} from 'vuex';
     import {colors} from 'quasar';
     import Vue from 'vue';
-    import chiefClient from './simplyapi'
 
     export default {
         computed: {
@@ -50,7 +48,60 @@
             colors.setBrand('primary', this.appLayout.style.primary);
             colors.setBrand('secondary', this.appLayout.style.secondary);
 
-;
+            for (var i = 0; i < this.appLayout.containerLayouts.length; i++) {
+                let template = this.appLayout.containerLayouts[i];
+                if (!template.style) {
+                    template.style = "";
+                }
+
+                (function (t) {
+                    console.log("register layout ", t)
+                    Vue.component(t.name, function (resolve, reject) {
+                        resolve({
+                            template: t.template,
+                            props: ['localData', 'layout'],
+                            data: function () {
+                                return {
+                                    styleTag: null,
+                                }
+                            },
+                            computed: {
+                                ...mapGetters(["appLayout", "vars"]),
+                            },
+                            methods: {
+                                ...mapActions(['fireEvent', 'setVar'])
+                            },
+                            beforeDestroy: function () {
+                                console.log("destroying template", t);
+                                if (this.styleTag) {
+                                    this.styleTag.remove()
+                                }
+                            },
+                            mounted: function () {
+                                console.log("mounted layout: ", t, this.appLayout);
+
+                                if (!this.vars) {
+                                    this.vars = {}
+                                }
+                                if (t.style) {
+                                    const css = t.style,
+                                        head = document.head || document.getElementsByTagName('head')[0],
+                                        style = document.createElement('style');
+
+                                    head.appendChild(style);
+
+                                    style.type = 'text/css';
+                                    style.appendChild(document.createTextNode(css));
+                                    this.styleTag = style;
+                                }
+                            }
+                        })
+                    })
+                })(template)
+
+
+            }
+
 
 
             for (var i = 0; i < this.appLayout.templates.length; i++) {
@@ -112,7 +163,7 @@
             }
         },
         methods: {
-            ...mapActions(['saveConfig', 'setPath', 'invokeChiefEvent']),
+            ...mapActions(['saveConfig', 'setPath']),
             make() {
                 var x = document.createElement("a");
                 x.href = "/make";

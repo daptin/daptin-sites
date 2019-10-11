@@ -1,8 +1,8 @@
 import daptinClient from '../api'
-import daptinClientSimply from '../simplyapi'
 import {DataTransform} from "node-json-transform" ;
 import Mustache from 'mustache';
 import router from '../router'
+
 export default {
   setLayout: ({commit, state}, layout) => {
     console.log("set layout called", layout);
@@ -61,21 +61,6 @@ export default {
       })
     })
   },
-  loginSimplyUser: ({commit, state}, credentials) => {
-    return new Promise(function (resolve, reject) {
-      daptinClientSimply.actionManager.doAction("user_account", "signin", {
-        email: credentials.email,
-        password: credentials.password,
-      }).then(function (response) {
-        console.log("sign in success");
-        commit("SET_CHIEF_USER", response[0].Attributes.value);
-        resolve(response);
-      }).catch(function (error) {
-        console.log("sign in failed");
-        reject(error);
-      })
-    })
-  },
   setDaptinToken: ({commit, state}, token) => {
     commit("SET_DAPTIN_TOKEN", token)
   },
@@ -87,67 +72,10 @@ export default {
     }
   },
   setTab({commit, state}, tab) {
-    // router().push(tab.path)
     commit("SET_PATH", tab.path.split("/")[1])
-    // this.refreshData(this.$route.params.referenceId)
   },
   setPagination: ({commit, state}, params) => {
     commit("SET_PAGINATION", params)
-    // commit("")
-  },
-  invokeChiefEvent: ({commit, state}, actionConfig) => {
-    console.log("chief action invoked", actionConfig);
-
-    if (!actionConfig) {
-      console.log("no action defined");
-      return
-    }
-
-
-    let tableName = actionConfig.params.table_name;
-    delete actionConfig.params.table_name;
-    switch (actionConfig.type) {
-      case "relocate":
-        const path = Mustache.render(actionConfig.params.path, actionConfig.params);
-        console.log("next path", path);
-        commit("SET_PATH", path);
-        break;
-      case "action":
-        const actionName = actionConfig.params.action_name;
-        const serverAction = state.serverActions.filter(function (e) {
-          return e.action_name == actionName
-        })[0];
-        console.log("execute server action", serverAction);
-        const actionSchema = JSON.parse(serverAction.action_schema);
-        return daptinClientSimply.actionManager.doAction(actionSchema.OnType, actionName, actionConfig.params).catch(function (e) {
-          console.log("action failed", e);
-          for (var i in e) {
-            var res = e[i];
-            switch (res.ResponseType) {
-              case "client.notify":
-                alert(res.Attributes.message);
-                break;
-            }
-          }
-        });
-
-
-      case "put":
-        console.log("put request", actionConfig)
-        return daptinClientSimply.jsonApi.update(tableName, actionConfig.params)
-
-      case "delete":
-        return daptinClientSimply.jsonApi.destroy(tableName, actionConfig.params)
-
-      case "post":
-        return daptinClientSimply.jsonApi.create(tableName, actionConfig.params)
-
-      case "get":
-        return daptinClientSimply.jsonApi.findAll(tableName, actionConfig.params)
-
-    }
-
-
   },
   invokeEvent: ({commit, state}, actionConfig) => {
     console.log("action invoked", actionConfig);

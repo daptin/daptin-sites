@@ -126,10 +126,10 @@ module.exports = function (ctx) {
       }
     },
 
-    // cordova: {
-    //   id: 'com.daptin.chief',
-      // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
-    // },
+    cordova: {
+      id: 'com.daptin.chief',
+      noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
+    },
 
     electron: {
       // bundler: 'builder', // or 'packager'

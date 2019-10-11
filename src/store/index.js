@@ -16,11 +16,8 @@ if (appConfig && appConfig.appLayout) {
 }
 
 var defaultConfig = {
-  applicationId: null,
   user: null,
-  chiefUser: null,
   token: null,
-  chiefToken: null,
   currentTab: null,
   item: null,
   vars: {},
@@ -45,150 +42,9 @@ var defaultConfig = {
       navbarTextColor: '#fff',
       navbarIconColor: '#729'
     },
-    layout: "bottom-nav-bar",
+    layout: "",
     containerLayouts: [],
-    templates: [
-      {
-        name: "card-view-1",
-        template: `<q-page>
-
-    <q-toolbar class="bg-primary text-white shadow-2" v-if="layout && layout.title">
-      <q-toolbar-title>{{layout.title}}</q-toolbar-title>
-    </q-toolbar>
-
-    <div class="q-pa-md row items-start q-gutter-md">
-      <template v-for="(row, i) in localData">
-        <q-card class="my-card" :key="row.key" @click.native="fireEvent({'name': 'ItemSingleClick', 'index': i, 'params': row})">
-
-          <q-avatar color="grey" text-color="white">
-            {{ row.avatar }}
-          </q-avatar>
-
-          <q-card-section>
-            <q-item-label>{{row.title}}</q-item-label>
-            <q-item-label caption lines="2">{{row.description}}</q-item-label>
-          </q-card-section>
-
-          <q-card-section>
-            <q-item-label caption>{{row.created_at}}</q-item-label>
-          </q-card-section>
-        </q-card>
-      </template>
-    </div>
-  </q-page>`,
-        variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
-        events: [{
-          name: "ItemSingleClick",
-          type: "SingleRow"
-        }]
-      },
-      {
-        name: "list-view-1",
-        template: `<q-page>
-
-    <q-toolbar class="bg-primary text-white shadow-2" v-if="layout && layout.title">
-      <q-toolbar-title>{{layout.title}}</q-toolbar-title>
-    </q-toolbar>
-
-    <q-list style="background: white">
-      <template v-for="(row, index) in localData">
-        <q-item :key="index" @click.native="fireEvent({'name': 'ItemSingleClick', 'index':index, 'params': row})">
-
-          <q-item-section avatar>
-            <q-avatar color="grey" text-color="white">
-              {{ row.avatar }}
-            </q-avatar>
-          </q-item-section>
-
-          <q-item-section>
-            <q-item-label>{{row.title}}</q-item-label>
-            <q-item-label caption lines="2">{{row.description}}</q-item-label>
-          </q-item-section>
-
-          <q-item-section side top>
-            <q-item-label caption>{{row.created_at}}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-separator spaced inset :key="'sep_' + row.key" v-if="index < localData.length - 1"/>
-      </template>
-    </q-list>
-
-  </q-page>`,
-        variables: ["title", "created_at", "description", "key", "avatar", "reference_id"],
-        events: [{
-          name: "ItemSingleClick",
-          type: "SingleRow"
-        }]
-      },
-      {
-        name: "another-form-view-1",
-        template: `<q-page>
-    <q-toolbar class="bg-primary text-white shadow-2" v-if="localData && localData.title">
-      <q-toolbar-title>{{localData.title}}</q-toolbar-title>
-    </q-toolbar>
-
-    <div class="q-pa-md row items-start q-gutter-md">
-
-      {{localData}}
-    </div>
-  </q-page>`,
-        style: "",
-        variables: ["title"],
-        events: [{
-          name: "DeleteItem"
-        }]
-      }, {
-        name: "json-view",
-        template: `<q-page>
-    <q-toolbar class="bg-primary text-white shadow-2" v-if="localData && localData.title">
-      <q-toolbar-title>{{localData.title}}</q-toolbar-title>
-    </q-toolbar>
-
-    <div class="q-pa-md row items-start q-gutter-md">
-
-      {{localData}}
-    </div>
-  </q-page>`,
-        style: "",
-        variables: ["reference_id"],
-        events: []
-      },
-      {
-        name: "home-view",
-        template: `<div>
-    Hello home
-    
-    <q-input label='Mobile number' v-model="vars.mobile_number"></q-input>
-    <q-btn label="Send Otp"  @click="fireEvent({name: 'test', params: {mobile_number: vars.mobile_number}})"></q-btn>
-    <q-btn label="Send Otp"  @click="fireEvent({name: 'untest', params: {mobile_number: vars.mobile_number}})"></q-btn>
-    
-    <table>
-        <tr v-for="row in localData" >
-           <td> {{row.title}}</td>
-           <td>
-               <q-btn @click="fireEvent({name: 'deleteThisAction', params: row})" label="Delete"></q-btn>
-           </td>
-        </tr>
-    </table>
-    
-</div>`,
-        variables: ["title", "reference_id"],
-        events: [
-          {
-            name: 'deleteThisAction',
-            type: "SingleRow"
-          },
-          {
-            name: 'test',
-            type: "SingleRow"
-          },
-          {
-            name: 'untest',
-            type: "SingleRow"
-          }
-        ]
-      }
-    ],
+    templates: [],
     tabs: [
       {
         label: "User accounts",
