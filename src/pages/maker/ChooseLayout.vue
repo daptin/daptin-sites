@@ -12,9 +12,6 @@
           </q-card-actions>
         </q-card>
       </div>
-      <div class="col-12">
-        <q-btn color="primary" @click="saveConfigAndNext()" label="next"/>
-      </div>
     </div>
   </div>
 </template>
@@ -44,12 +41,10 @@
         'invokeEvent',
         'refreshModels']
       ),
-      saveConfigAndNext() {
-        this.$router.push('/make/screens');
-      },
       setLayout(layoutName) {
         this.appLayout.layout = layoutName;
         this.saveConfig();
+        this.$router.push('/make/screens');
       },
     }
   }

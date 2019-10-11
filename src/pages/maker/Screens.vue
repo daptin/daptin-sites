@@ -38,10 +38,10 @@
       <div style="height: 100%" v-if="screen" class="row">
 
 
-        <div class="col-8" style="background: #ebf1f4;padding-top: 150px; padding-left: 250px">
+        <div class="col-8" style="background: #ebf1f4;padding-top: 20px; padding-left: 200px">
 
           <br>
-          <iframe style="width: 100%; max-width: 320px; min-height: 500px; z-index: -1"
+          <iframe style="width: 100%; max-width: 411px; min-height: 731px; z-index: -1"
                   class="flower preview-frame"
                   :src="screen.path"></iframe>
         </div>
