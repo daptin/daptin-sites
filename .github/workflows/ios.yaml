@@ -40,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: daptinsite.app
-          path: dist/cordova/ios/daptinsite.app
+          path: dist/cordova/ios/Chief.app
 
 
       - name: Release
@@ -49,6 +49,6 @@ jobs:
         with:
           draft: true
           files: |
-            dist/cordova/ios/daptinsite.app
+            dist/cordova/ios/Chief.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
