@@ -32,16 +32,16 @@ jobs:
           npm install
           quasar build -m electron
           ls -lah dist
-          ls -lah dist/electron
+          find dist/electron
 
 
       - uses: actions/upload-artifact@v2
         with:
           name: daptinsite.AppImage
-          path: dist/electron/Packaged/*.AppImage
+          path: dist/electron/daptinsite-linux-x64/*.AppImage
 
       - uses: actions/upload-artifact@v2
         with:
           name: daptinsite.snap
-          path: dist/electron/Packaged/*.snap
+          path: dist/electron/daptinsite-linux-x64/*.snap
 
