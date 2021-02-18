@@ -38,5 +38,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: daptinsite.dmg
-          path: dist/electron/Packaged/*.dmg
+          path: dist/electron/daptinsite-linux-x64/*.dmg
 
