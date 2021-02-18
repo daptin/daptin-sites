@@ -32,6 +32,9 @@ jobs:
           npm install -g cordova
           npm install
           quasar build -m ios
+          ls build
+          ls
+          find
           ls -lah dist
           ls -lah dist/cordova
           find dist/cordova
