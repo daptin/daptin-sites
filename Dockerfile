@@ -1,8 +1,9 @@
 FROM daptin/daptin:travis
 
 RUN mkdir -p /opt/daptin/storage/documents
-ADD dist/spa /opt/daptin/site
-ENV DAPTIN_DASHBOARD /opt/daptin/site
+RUN mkdir -p /opt/daptin/daptinweb/dist/spa
+COPY dist/spa /opt/daptin/daptinweb/dist/spa
+ENV DAPTIN_DASHBOARD /opt/daptin/dashboard
 ENV DAPTIN_PORT_VARIABLE PORT
 
-CMD /opt/daptin/daptin -dashboard /opt/daptin/site -port :8080
+ENTRYPOINT /opt/daptin/daptin -dashboard /opt/daptin/dashboard -port :8080
