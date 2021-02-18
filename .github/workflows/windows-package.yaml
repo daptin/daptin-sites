@@ -38,5 +38,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: daptinsite.exe
-          path: dist/electron/daptinsite-linux-x64/*.exe
+          path: dist/electron/daptinsite-win32-x64/*.exe
 
