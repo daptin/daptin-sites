@@ -32,7 +32,7 @@ jobs:
           npm install
           quasar build -m electron
           ls -lah dist
-          ls -lah dist/electron
+          find dist/electron
 
 
       - uses: actions/upload-artifact@v2
