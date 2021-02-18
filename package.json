@@ -10,6 +10,8 @@
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
     "build": "node node_modules/@quasar/app/bin/quasar build pwa",
+    "build-electron": "node node_modules/@quasar/app/bin/quasar build -m electron",
+    "build-android": "node node_modules/@quasar/app/bin/quasar build -m cordova -T android  -- --buildConfig=../build.cordova.json",
     "start": "node node_modules/@quasar/app/bin/quasar serve -m pwa",
     "dev": "node node_modules/@quasar/app/bin/quasar dev -m pwa"
   },
