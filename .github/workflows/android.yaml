@@ -1,0 +1,71 @@
+name: Build/android
+
+on:
+  push:
+    branches:
+      - master
+      - "android-ci"
+    tags:
+      - '*'
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+
+      - name: Install node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Make key file
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+          RELEASE_KEYSTORE_PASSPHRASE: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
+          CORDOVA_BUILD_CONFIG: ${{ secrets.CORDOVA_BUILD_CONFIG }}
+        run: |
+            echo "creating keystore"
+            ls -lah
+            mkdir keys
+            echo "$RELEASE_KEYSTORE" > keys/quasar-release-key.jks.asc
+            echo "$CORDOVA_BUILD_CONFIG" > build.cordova.json
+            echo "finishing creating keystore"
+            find keys
+            echo "decode passphrase"
+            gpg -d --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" --batch keys/quasar-release-key.jks.asc > keys/quasar-release-key.jks
+            echo "finishing decoding passphrase"
+
+
+      - name: Use oxr463/setup-cordova
+        uses: oxr463/setup-cordova@0.0.2
+        with:
+          exec: |
+            npm install -g @quasar/cli
+            npm install
+            npm run build-android
+            find . | grep apk
+            mv dist/cordova/android/apk/release/app-release.apk dist/cordova/android/apk/release/daptinsite-app.apk
+
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: daptinsite-app.apk
+          path: dist/cordova/android/apk/release/daptinsite-app.apk
+
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: |
+            dist/cordova/android/apk/release/daptinsite-app.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

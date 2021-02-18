@@ -1,9 +1,9 @@
 {
-  "name": "chief",
+  "name": "daptinsite",
   "version": "0.0.1",
-  "description": "Daptin chief",
-  "productName": "Chief",
-  "cordovaId": "org.daptin.chief",
+  "description": "Daptin site",
+  "productName": "daptinsite",
+  "cordovaId": "org.daptin.site",
   "author": "artpar <artpar@gmail.com>",
   "private": true,
   "scripts": {
