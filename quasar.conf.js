@@ -127,7 +127,7 @@ module.exports = function (ctx) {
     },
 
     cordova: {
-      id: 'com.daptin.chief',
+      id: 'com.daptin.daptinsite',
       noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
     },
 
