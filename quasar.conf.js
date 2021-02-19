@@ -51,7 +51,6 @@ module.exports = function (ctx) {
     build: {
       env: {
         DAPTIN_ENDPOINT: JSON.stringify(process.env.DAPTIN_ENDPOINT),
-        CHIEF_ENDPOINT: JSON.stringify(process.env.CHIEF_ENDPOINT),
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -89,9 +88,9 @@ module.exports = function (ctx) {
       // workboxPluginMode: 'InjectManifest',
       // workboxOptions: {}, // only for NON InjectManifest
       manifest: {
-        // name: 'Chief',
-        // short_name: 'Chief',
-        // description: 'Daptin chief',
+        name: 'Chief',
+        short_name: 'Chief',
+        description: 'Daptin chief',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -127,35 +126,41 @@ module.exports = function (ctx) {
     },
 
     cordova: {
-      id: 'com.daptin.daptinsite',
+      id: 'in.dapt.daptinsite',
       noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
     },
 
     electron: {
-      // bundler: 'builder', // or 'packager'
-
-      extendWebpack(cfg) {
-        // do something with Electron main process Webpack cfg
-        // chainWebpack also available besides this extendWebpack
-      },
+      bundler: 'builder', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+        all: true,
 
         // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
+        appBundleId: 'in.dapt.daptinsite',
+        appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
 
         // Windows only
-        // win32metadata: { ... }
+        win32metadata: {
+
+        }
       },
 
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        // appId: 'chief'
+        appId: 'in.dapt.daptinsite'
+      },
+
+      // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
+      nodeIntegration: true,
+
+      extendWebpack(cfg) {
+        // do something with Electron main process Webpack cfg
+        // chainWebpack also available besides this extendWebpack
       }
     }
   }
