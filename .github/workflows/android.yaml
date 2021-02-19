@@ -34,7 +34,7 @@ jobs:
             echo "creating keystore"
             ls -lah
             mkdir keys
-            echo "$RELEASE_KEYSTORE" | base64 > keys/quasar-release-key.jks
+            echo "$RELEASE_KEYSTORE" | base64 -D > keys/quasar-release-key.jks
             echo "$CORDOVA_BUILD_CONFIG" > build.cordova.json
             echo "finishing creating keystore"
             find keys
